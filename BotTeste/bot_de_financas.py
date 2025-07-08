@@ -4,7 +4,7 @@ import database
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-TOKEN = "N/A"
+TOKEN = "8030257844:AAEzUlXSamdDxZHqA1tnSSk9zMc9fpSWEbA"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Responde ao comando /start"""
@@ -68,7 +68,7 @@ async def apagar_todos_gastos(update: Update, context: ContextTypes.DEFAULT_TYPE
     # Chama a função do banco de dados para buscar os dados
     database.apagar_todos_gastos()
 
-    await update.message.reply_text("Dados de gastos apagados!")
+    await update.message.reply_text("Gastos apagados!")
 
 def main():
     """Inicia o bot."""
@@ -78,7 +78,7 @@ def main():
 
     # Adiciona os "ouvintes" para os comandos e mensagens
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("inserir", inserirGasto))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, inserirGasto))
     application.add_handler(CommandHandler("todosGastos", ver_todos_gastos))
     application.add_handler(CommandHandler("ApagarGastos", apagar_todos_gastos))
 
