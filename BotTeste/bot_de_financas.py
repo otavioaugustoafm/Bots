@@ -4,7 +4,7 @@ import database
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-TOKEN = "8030257844:AAEzUlXSamdDxZHqA1tnSSk9zMc9fpSWEbA"
+TOKEN = "N/A"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Responde ao comando /start"""
