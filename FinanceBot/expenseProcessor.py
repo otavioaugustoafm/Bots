@@ -17,11 +17,11 @@ def processExpense(stringRead):
         # try to transform the string on the firt position of the treated_string into a float 
         value = float(treated_string[0])
         if checkType(treated_string[1]):
-            type = treated_string[1]
+            type = treated_string[1].capitalize()
         else: 
             return "Erro: O tipo inserido não é válido. Tente com: Transporte - Lazer - Alimentação - Compras - Outros"
         if len(treated_string) > 2:
-            description = treated_string[2]
+            description = treated_string[2].capitalize()
         else:
             description = "Nenhuma"
         bot_answer = {
