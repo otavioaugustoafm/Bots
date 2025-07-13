@@ -6,7 +6,7 @@ import database
 
 TOKEN = "N/A"
 
-TIPO = 0
+READTYPE = 0
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # waits for the network confirmation and sends the following message
@@ -26,7 +26,7 @@ async def storeExpense(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("Algum erro ocorreu. Tente novamente.")
     # if processExpense returns a string type answer, show the user the string error
-        print("Inserção de dados feita.\n")
+        print("Inserção de dados feita.")
     else: 
         await update.message.reply_text(functionReturn)
 
@@ -35,13 +35,15 @@ async def showAllData(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # uses the shoAllData function to retrieve all tuples of the table
         results = database.showAllData()
         # if showAllData returned False, it is because the table is empty
-        if results is False:
+        if not results:
             await update.message.reply_text("Não há nenhum gasto cadastrado até o momento")
         else:
             answer = "----- Seus gastos -----\n\n"
             # for each itemOnList, it formats a message
             for itemOnList in results:
                 value, type, description, date = itemOnList
+                dateFormat = date.split("-")
+                date = dateFormat[2] + "/" + dateFormat[1] + "/" + dateFormat[0]
                 answer += f"Valor: {value}\n"
                 answer += f"Tipo: {type}\n"
                 answer += f"Description: {description}\n"
@@ -53,14 +55,15 @@ async def showAllData(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Erro ao mostrar todos os gastos")
 
 async def readFilter(update, context):
-    await update.message.reply_text("Digite o tipo para filtrar:")
-    return TIPO
+    await update.message.reply_text("Digite o que quer filtrar:\n\nPara período: DD/MM/AAAA\n\nPara tipo digite algum entre: Transporte - Lazer - Alimentação - Compras - Outros")
+    return READTYPE
 
 async def filterByType (update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         # checks if is a acceptable type
         stringRead = update.message.text
-        stringRead = stringRead.capitalize()
+        if stringRead == "alimentacao" or stringRead == "Alimentacao":
+            stringRead = "Alimentação"
         if expenseProcessor.checkType(stringRead):
             # gathers the expenses for the type
             results = database.filterByType(stringRead)
@@ -93,14 +96,7 @@ def main():
     conv_handler1 = ConversationHandler(
         entry_points=[CommandHandler("2", readFilter)],
         states={
-            TIPO: [MessageHandler(filters.TEXT & ~filters.COMMAND, filterByType)]
-        },
-        fallbacks=[]
-    )
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("2", readFilter)],
-        states={
-            TIPO: [MessageHandler(filters.TEXT & ~filters.COMMAND, filterByType)]
+            READTYPE: [MessageHandler(filters.TEXT & ~filters.COMMAND, filterByType)]
         },
         fallbacks=[]
     )

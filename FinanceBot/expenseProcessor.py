@@ -1,6 +1,6 @@
 def checkType(type):
     # all the acceptable types 
-    GENERAL_TYPES = ["TRANSPORTE", "LAZER", "ALIMENTACAO", "ALIMENTAÇÃO", "COMPRAS", "OUTROS"]
+    GENERAL_TYPES = ["TRANSPORTE", "LAZER", "ALIMENTAÇÃO", "COMPRAS", "OUTROS"]
     # if the type read from the user message does not correspond with any type in GENERAL_TYPES, return an Error
     if type.upper() in GENERAL_TYPES:
         return True
@@ -16,6 +16,8 @@ def processExpense(stringRead):
             return "Erro: O gasto deve ter, no mínimo, dois campos: VALOR TIPO"
         # try to transform the string on the firt position of the treated_string into a float 
         value = float(treated_string[0])
+        if treated_string[1] == "alimentacao" or treated_string[1] == "Alimentacao":
+            treated_string[1] = "Alimentação"
         if checkType(treated_string[1]):
             type = treated_string[1].capitalize()
         else: 
