@@ -4,7 +4,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, Conversati
 import expenseProcessor
 import database
 
-TOKEN = "8030257844:AAEzUlXSamdDxZHqA1tnSSk9zMc9fpSWEbA"
+TOKEN = "N/A"
 
 READTYPE = 0
 
