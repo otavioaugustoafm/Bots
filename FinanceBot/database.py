@@ -35,7 +35,7 @@ def storeData(data):
         # execute the expense data insertion on the table
         cursor.execute(""" 
             INSERT INTO Expenses (value, type, description, date) 
-            VALUES (?, ?, ?, DATE('now'))
+            VALUES (?, ?, ?, "2025-07-04")
         """, (data["value"], data["type"], data["description"]))
         # commits the command and closes the connection
         connection.commit()
@@ -81,7 +81,32 @@ def filterByType(typeRead):
             SELECT value, type, description, date
             FROM Expenses
             WHERE type = (?)
+            ORDER BY date DESC
         """, (typeRead,))
+        # results receives all the tuples on the table expenses
+        results = cursor.fetchall()
+        # close the connection. 
+        # no need to commit because it was a search
+        connection.close()
+        return results
+    except Exception as e:
+        return False
+
+def filterByDate(formatedDate):
+    try:
+        dates = formatedDate.split(" ")
+        date1 = dates[0]
+        date2 = dates[1]
+        connection = sqlite3.connect("expenses.db")
+        # creates the "cursor", the object that executes the SQL commands
+        cursor = connection.cursor()
+        # execute the search on the table for all tuples
+        cursor.execute(""" 
+            SELECT value, type, description, date
+            FROM Expenses
+            WHERE date BETWEEN (?) AND (?)
+            ORDER BY date DESC
+        """, (date1, date2))
         # results receives all the tuples on the table expenses
         results = cursor.fetchall()
         # close the connection. 
