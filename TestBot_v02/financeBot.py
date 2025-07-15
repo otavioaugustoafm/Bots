@@ -47,9 +47,9 @@ async def showAllData(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 value, type, description, date = itemOnList
                 dateFormat = date.split("-")
                 date = dateFormat[2] + "/" + dateFormat[1] + "/" + dateFormat[0]
-                answer += f"Valor: {value}\n"
+                answer += f"Valor: {value:.2f}\n"
                 answer += f"Tipo: {type}\n"
-                answer += f"Description: {description}\n"
+                answer += f"Descrição: {description}\n"
                 answer += f"Data: {date}\n"
                 answer += f"-------------\n"
             await update.message.reply_text(answer)
@@ -85,9 +85,9 @@ async def filterByType (update: Update, context: ContextTypes.DEFAULT_TYPE):
                 value, type, description, date = itemOnList
                 dateFormat = date.split("-")
                 date = dateFormat[2] + "/" + dateFormat[1] + "/" + dateFormat[0]
-                answer += f"Valor: {value}\n"
+                answer += f"Valor: {value:.2f}\n"
                 answer += f"Tipo: {type}\n"
-                answer += f"Description: {description}\n"
+                answer += f"Descrição: {description}\n"
                 answer += f"Data: {date}\n"
                 answer += f"-------------\n"
             await update.message.reply_text(answer)
@@ -128,9 +128,9 @@ async def filterByDate(update: Update, context: ContextTypes.DEFAULT_TYPE):
             value, type, description, date = itemOnList
             dateFormat = date.split("-")
             date = dateFormat[2] + "/" + dateFormat[1] + "/" + dateFormat[0]
-            answer += f"Valor: {value}\n"
+            answer += f"Valor: {value:.2f}\n"
             answer += f"Tipo: {type}\n"
-            answer += f"Description: {description}\n"
+            answer += f"Descrição: {description}\n"
             answer += f"Data: {date}\n"
             answer += f"-------------\n"
         await update.message.reply_text(answer)

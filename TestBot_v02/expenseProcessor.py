@@ -23,7 +23,12 @@ def processExpense(stringRead):
         else: 
             return "Erro: O tipo inserido não é válido. Tente com: Transporte - Lazer - Alimentação - Compras - Outros"
         if len(treated_string) == 3:
-            description = treated_string[2].capitalize()
+            help = treated_string[2]
+            if len(help.split("/")) == 3:
+                description = "Nenhuma"
+                date = treated_string[2]
+            else:    
+                description = treated_string[2].capitalize()
         elif len(treated_string) == 2:
             description = "Nenhuma"
         elif len(treated_string) == 4:
