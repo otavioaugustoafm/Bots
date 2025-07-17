@@ -10,12 +10,15 @@ READTYPE = 0
 
 READDATE = 0
 
+SUM = 0
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # waits for the network confirmation and sends the following message
     await update.message.reply_text("---------- Bot de Finanças ----------\n\n"\
-    "Para adicionar os dados de um gasto, apenas digite no seguinte modelo: VALOR TIPO DESCRIÇÃO DATA\nExemplo: 29,99 Alimentação Descrição 10/03/2025\n\n" \
-    "Os tipos disponíveis são: Transporte - Lazer - Alimentação - Compras - Outros\n\nOBS: Descrição e data NÃO são obrigatórios e, caso não sejam inseridas, serão \"Nenhuma\" e a data atual respectivamente.\n\n" \
-    "Digite /1 para mostrar TODOS os gastos.\n\nDigite /2 para exibir todos os gastos filtrados por tipo\n\nDigite /3 para exibir todos os gastos filtrados por data ou período\n\n")
+    "Para adicionar os dados de um gasto, apenas digite no seguinte modelo: VALOR TIPO DATA DESCRIÇÃO\nExemplo: 29,99 Alimentação 10/03/2025 Alguma Descrição\n\n" \
+    "Os tipos disponíveis são: Transporte - Lazer - Alimentação - Compras - Outros\n\nOBS: Data e Descrição NÃO são obrigatórias e, caso não sejam inseridas, serão completadas pela data atual e \"Nenhuma\", respectivamente.\n\n" \
+    "Digite /1 para mostrar TODOS os gastos.\n\nDigite /2 para exibir todos os gastos filtrados por tipo\n\nDigite /3 para exibir todos os gastos filtrados por data ou período\n\n" \
+    "Digite /4 para somar todos os gastos de um período ou de uma data específica")
 
 async def storeExpense(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # stringRead receives the user message
@@ -63,8 +66,12 @@ async def readFilterType(update, context):
     return READTYPE
 
 async def readFilterDate(update, context):
-    await update.message.reply_text("Digite a data ou período que quer filtrar:\nData: DD/MM/AAAA\nPeríodo: DD/MM/AAAA a DD/MM/AAAA")
+    await update.message.reply_text("Digite a data ou período que quer filtrar.\n\nUse o formato: DD/MM/AAAA para datas\n\nUse o formato: DD/MM/AAAA a DD/MM/AAAA para períodos")
     return READDATE
+
+async def sum(update, context):
+    await update.message.reply_text("Digite a data/período que quer somar todos os gastos.\n\nUse o formato: DD/MM/AAAA para dias específicos\n\nUse o formato: DD/MM/AAAA a DD/MM/AAAA para períodos ")
+    return SUM
 
 async def filterByType (update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
@@ -140,6 +147,26 @@ async def filterByDate(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Erro ao filtrar por data ou período")
         return ConversationHandler.END
     
+async def consultsSum(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        stringRead = update.message.text
+        result = database.sumDayPeriod(stringRead)
+        if result is None:
+            await update.message.reply_text("Nenhum gasto nesse dia.")
+            return ConversationHandler.END
+        elif result is False:
+            await update.message.reply_text("Algum erro ocorreu fazendo a pesquisa")
+            return ConversationHandler.END
+        stringRead = stringRead.split(" a ")
+        if len(stringRead) > 1:
+            answer = f"----- Seus Gastos -----\nPeríodo: {stringRead[0]} a {stringRead[1]}\n\n"
+        elif len(stringRead) == 1:
+            answer = f"----- Seus Gastos -----\nDia: {stringRead[0]}\n\n"
+        await update.message.reply_text(f"{answer}Total: {result:.2f}")
+        return ConversationHandler.END
+    except Exception as e:
+        return ConversationHandler.END
+    
 def main():
     print("Iniciando o bot...")
     database.createDataBase()
@@ -155,6 +182,13 @@ def main():
         entry_points=[CommandHandler("3", readFilterDate)],
         states={
             READDATE: [MessageHandler(filters.TEXT & ~filters.COMMAND, filterByDate)]
+        },
+        fallbacks=[]
+    )
+    conv_handler2 = ConversationHandler(
+        entry_points=[CommandHandler("4", sum)],
+        states={
+            SUM: [MessageHandler(filters.TEXT & ~filters.COMMAND, consultsSum)]
         },
         fallbacks=[]
     )

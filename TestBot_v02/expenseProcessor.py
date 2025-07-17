@@ -10,7 +10,7 @@ def checkType(type):
 def processExpense(stringRead):
     try:
         # replaces the firt "," for "." and splits the string in three using " " (blank space)
-        treated_string = stringRead.replace(",", ".", 1).split(" ")
+        treated_string = stringRead.replace(",", ".", 1).split(" ", 3)
         # if the list of treated_string has less than two arguments (VALOR TIPO), return an Error
         if len(treated_string) == 1:
             return "Erro: O gasto deve ter, no mínimo, dois campos: VALOR TIPO"
@@ -27,13 +27,23 @@ def processExpense(stringRead):
             if len(help.split("/")) == 3:
                 description = "Nenhuma"
                 date = treated_string[2]
+                formatedDate = date.replace("/", "-")
+                formatedDate = formatedDate.split("-")
+                formatedDate = formatedDate[2] + "-" + formatedDate[1] + "-" + formatedDate[0]
+                bot_answer = {
+                    "value": value,
+                    "type": type,
+                    "description": description,
+                    "date": formatedDate
+                }
+                return bot_answer
             else:    
                 description = treated_string[2].capitalize()
         elif len(treated_string) == 2:
             description = "Nenhuma"
         elif len(treated_string) == 4:
-            description = treated_string[2].capitalize()
-            date = treated_string[3]
+            description = treated_string[3].capitalize()
+            date = treated_string[2]
             try:
                 formatedDate = date.replace("/", "-")
                 formatedDate = formatedDate.split("-")
@@ -46,6 +56,7 @@ def processExpense(stringRead):
                 }
                 return bot_answer
             except Exception as e:
+                print(e)
                 return "Erro: A data inserida é inválida. Use o formato: DD/MM/AAAA"    
         bot_answer = {
             "value": value,

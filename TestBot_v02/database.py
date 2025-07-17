@@ -63,7 +63,7 @@ def showAllData():
         cursor.execute(""" 
             SELECT value, type, description, date
             FROM Expenses
-            ORDER BY date DESC
+            ORDER BY date ASC
         """)
         # results receives all the tuples on the table expenses
         results = cursor.fetchall()
@@ -110,7 +110,7 @@ def filterByDate(formatedDate):
             SELECT value, type, description, date
             FROM Expenses
             WHERE date == (?)
-            ORDER BY date DESC
+            ORDER BY date ASC
         """, (date1,))
         elif len(dates) == 2:
             date1 = dates[0]
@@ -119,7 +119,7 @@ def filterByDate(formatedDate):
             SELECT value, type, description, date
             FROM Expenses
             WHERE date BETWEEN (?) AND (?)
-            ORDER BY date DESC
+            ORDER BY date ASC
         """, (date1, date2))
         # results receives all the tuples on the table expenses
         results = cursor.fetchall()
@@ -128,4 +128,48 @@ def filterByDate(formatedDate):
         connection.close()
         return results
     except Exception as e:
+        return False
+    
+def sumDayPeriod(dayOrPeriod):
+    try:
+        connection = sqlite3.connect("expenses.db")
+        # creates the "cursor", the object that executes the SQL commands
+        cursor = connection.cursor()
+        treatedDate = dayOrPeriod.split(" a ")
+        if len(treatedDate) > 1:
+            date1 = treatedDate[0]
+            formatedDate = date1.replace("/", "-")
+            formatedDate = formatedDate.split("-")
+            date1 = formatedDate[2] + "-" + formatedDate[1] + "-" + formatedDate[0]
+            date2 = treatedDate[1]
+            formatedDate = date2.replace("/", "-")
+            formatedDate = formatedDate.split("-")
+            date2 = formatedDate[2] + "-" + formatedDate[1] + "-" + formatedDate[0]
+            cursor.execute(""" 
+                SELECT SUM(value) 
+                FROM Expenses 
+                WHERE date BETWEEN ? AND ?
+            """, (date1, date2))
+        elif len(treatedDate) == 1:
+            date1 = treatedDate[0]
+            formatedDate = date1.replace("/", "-")
+            formatedDate = formatedDate.split("-")
+            date1 = formatedDate[2] + "-" + formatedDate[1] + "-" + formatedDate[0]
+            date2 = None
+            cursor.execute(""" 
+                SELECT SUM(value) 
+                FROM Expenses 
+                WHERE date == (?)
+            """, (date1,))
+        resultado_tupla = cursor.fetchone()
+        if resultado_tupla and resultado_tupla[0] is not None:
+            connection.close()
+            return float(resultado_tupla[0])
+        else:
+            connection.close()
+            return 0.0
+        # close the connection. 
+        # no need to commit because it was a search
+    except Exception as e:
+        print(e)
         return False
