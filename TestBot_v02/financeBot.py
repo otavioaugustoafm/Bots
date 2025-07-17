@@ -16,7 +16,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # waits for the network confirmation and sends the following message
     await update.message.reply_text("---------- Bot de Finanças ----------\n\n"\
     "Para adicionar os dados de um gasto, apenas digite no seguinte modelo: VALOR TIPO DATA DESCRIÇÃO\nExemplo: 29,99 Alimentação 10/03/2025 Alguma Descrição\n\n" \
-    "Os tipos disponíveis são: Transporte - Lazer - Alimentação - Compras - Outros\n\nOBS: Data e Descrição NÃO são obrigatórias e, caso não sejam inseridas, serão completadas pela data atual e \"Nenhuma\", respectivamente.\n\n" \
+    "Os tipos disponíveis são: Transporte - Lazer - Alimentação - Compras - Outros\n\nOBS 1: Data e Descrição NÃO são obrigatórias e, caso não sejam inseridas, serão completadas pela data atual e \"Nenhuma\", respectivamente.\n\nOBS 2: Para adicionar descrições com mais de uma palavra, é OBRIGATÓRIO inserir o dia do gasto, mesmo que seja o dia de \"hoje\".\n\n" \
     "Digite /1 para mostrar TODOS os gastos.\n\nDigite /2 para exibir todos os gastos filtrados por tipo\n\nDigite /3 para exibir todos os gastos filtrados por data ou período\n\n" \
     "Digite /4 para somar todos os gastos de um período ou de uma data específica")
 
