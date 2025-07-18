@@ -1,0 +1,79 @@
+from datetime import datetime
+
+def DBdateFormater(date): # formart the date to the DB model
+    date = date.split("/")
+    date = date[2] + "-" + date[1] + "-" + date[0]
+    return date
+
+def checkType(type): # checks if the type is valid
+    TYPES = {"TRANSPORTE", "LAZER", "COMPRAS", "ALIMENTAÇÃO", "OUTROS"}
+    if type.upper() in {"ALIMENTACAO", "ALIMENTAÇAO", "ALIMENTACÃO", "ALIMENTAÇÃO"}:
+        type = "ALIMENTAÇÃO"
+    if type.upper() in TYPES:
+        return type.capitalize()
+    else:
+        return False
+
+def checkInput (input): # check how the user made his input
+    input = input.split(" ", 2)
+    type = checkType(input[1])
+    if type is False:
+        return f"O tipo \"{input[1]}\" não é válido."
+    if len(input) == 1: # checks if the user entered less than two fields
+        return "Entrada inválida! Informe, no MÍNIMO, VALOR e TIPO.\n\nExemplo: 29,99 Compras"
+    elif len(input) == 2: # checks whether the user has entered the minimun number of fields
+        answer = { 
+            "Value": input[0], # gets the value from the user message
+            "Type": type, # gets the type from the user message 
+            "Date": None,
+            "Description": None
+        }
+        return answer
+    elif len(input) == 3: # will check if the user used three or four fields (VALOR TIPO DATA DESCRIÇÃO)
+        aux = input[2].split(" ", 1)
+        aux2 = aux[0].split("/", 2)
+        if len(aux) == 1:
+            if len(aux2) == 1:
+                answer = { 
+                    "Value": input[0], # gets the value from the user message
+                    "Type": type, # gets the type from the user message 
+                    "Date": None,
+                    "Description": aux2[0].capitalize() # gets the description from the user message
+                }   
+            elif len(aux2) == 3:
+                formatedDate = DBdateFormater(aux[0])
+                try: 
+                    datetime.strptime(formatedDate, "%Y-%m-%d")
+                except ValueError:
+                    return "A data foi inserida no formato errado."
+                answer = { 
+                   "Value": input[0], # gets the value from the user message
+                   "Type": type, # gets the type from the user message 
+                   "Date": formatedDate, # gets the date from the user message
+                   "Description": None
+                }
+            else:
+                return "A data foi inserida no formato errado."          
+            return answer
+        elif len(aux) == 2:
+            if len(aux2) == 3:
+                formatedDate = DBdateFormater(aux[0])
+                try: 
+                    datetime.strptime(formatedDate, "%Y-%m-%d")
+                except ValueError:
+                    return "A data foi inserida no formato errado."
+                answer = { 
+                    "Value": input[0], # gets the value from the user message
+                    "Type": type, # gets the type from the user message 
+                    "Date": formatedDate, # gets the date from the user message
+                    "Description": aux[1].capitalize() # gets the description from the user message
+                } 
+            else: 
+                answer = { 
+                    "Value": input[0], # gets the value from the user message
+                    "Type": type, # gets the type from the user message 
+                    "Date": None,
+                    "Description": input[2].capitalize() # gets the description from the user message
+                }
+            return answer
+             
