@@ -185,7 +185,7 @@ def main():
         },
         fallbacks=[]
     )
-    conv_handler2 = ConversationHandler(
+    conv_handler3 = ConversationHandler(
         entry_points=[CommandHandler("4", sum)],
         states={
             SUM: [MessageHandler(filters.TEXT & ~filters.COMMAND, consultsSum)]
@@ -194,6 +194,7 @@ def main():
     )
     application.add_handler(conv_handler1)
     application.add_handler(conv_handler2)
+    application.add_handler(conv_handler3)
     application.add_handler(CommandHandler("0", start))
     application.add_handler(CommandHandler("1", showAllData))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, storeExpense))

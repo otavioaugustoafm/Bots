@@ -41,7 +41,7 @@ def storeData(data):
         else:
             cursor.execute(""" 
                 INSERT INTO Expenses (value, type, description, date) 
-                VALUES (?, ?, ?, DATE('now'))
+                VALUES (?, ?, ?, DATE('now', 'localtime'))
             """, (data["value"], data["type"], data["description"]))
         # commits the command and closes the connection
         connection.commit()
