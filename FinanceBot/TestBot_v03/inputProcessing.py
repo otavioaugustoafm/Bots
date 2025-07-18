@@ -1,4 +1,5 @@
 from datetime import datetime
+import database
 
 def DBdateFormater(date): # formart the date to the DB model
     try:
@@ -35,7 +36,7 @@ def checkInput (input): # check how the user made his input
     if len(input) == 2: # checks whether the user has entered the minimun number of fields
         print("O usuário digitou dois campos.")
         answer = { 
-            "Value": input[0], # gets the value from the user message
+            "Value": float(input[0]), # gets the value from the user message
             "Type": type, # gets the type from the user message 
             "Date": None,
             "Description": "Nenhuma"
@@ -48,7 +49,7 @@ def checkInput (input): # check how the user made his input
             if len(aux2) == 1:
                 print("O usuário digitou três campos, sendo DESCRIÇÃO o último e com uma palavra.")
                 answer = { 
-                    "Value": input[0], # gets the value from the user message
+                    "Value": float(input[0]), # gets the value from the user message
                     "Type": type, # gets the type from the user message 
                     "Date": None,
                     "Description": aux2[0].capitalize() # gets the description from the user message
@@ -61,7 +62,7 @@ def checkInput (input): # check how the user made his input
                     return "A data foi inserida no formato errado."
                 print("O usuário digitou três campos, sendo DATA o último")
                 answer = { 
-                   "Value": input[0], # gets the value from the user message
+                   "Value": float(input[0]), # gets the value from the user message
                    "Type": type, # gets the type from the user message 
                    "Date": formatedDate, # gets the date from the user message
                    "Description": "Nenhuma"
@@ -78,7 +79,7 @@ def checkInput (input): # check how the user made his input
                     return "A data foi inserida no formato errado."
                 print("O usuário digitou os quatro campos.")
                 answer = { 
-                    "Value": input[0], # gets the value from the user message
+                    "Value": float(input[0]), # gets the value from the user message
                     "Type": type, # gets the type from the user message 
                     "Date": formatedDate, # gets the date from the user message
                     "Description": aux[1].capitalize() # gets the description from the user message
@@ -86,7 +87,7 @@ def checkInput (input): # check how the user made his input
             else: 
                 print("O usuário digitou três campos, sendo descrição o último e com mais de uma palavra.")
                 answer = { 
-                    "Value": input[0], # gets the value from the user message
+                    "Value": float(input[0]), # gets the value from the user message
                     "Type": type, # gets the type from the user message 
                     "Date": None,
                     "Description": input[2].capitalize() # gets the description from the user message
