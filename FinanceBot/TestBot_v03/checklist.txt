@@ -1,0 +1,88 @@
+Checklist
+
+Main idea:
+
+Finance bot that can:
+    - Store expenses
+        - VALUE TYPE -> 29,99 Compras 
+        - VALUE TYPE DATE -> 29,99 Compras 20/10/2005
+        - VALUE TYPE DESCRIPTION -> 29,99 Compras Camisa do Atlético
+        - VALUE TYPE DATE DESCRIPTION -> 29,99 Compras 20/10/2005 Camisa do Atlético
+
+    - Show all expenses stored
+
+    - Filter and show expenses by:
+        - Type
+        - Day
+        - Period
+        - Type - Day
+        - Type - Period
+
+    - Sum expenses by:
+        - Type
+        - Day
+        - Period
+        - Type - Day
+        - Type - Period
+
+    - Remove expenses
+        - ID
+
+Planning:
+
+1 - inputProcessing:
+
+    - checkInput(input) -> Check user message
+        - checkFormatDate(date)
+        - checkFormatType(type)
+        - returns dict 
+            - response = {
+                "Value": float(W)
+                "Type": X
+                "Date:" Y
+                "Description": Z
+            }
+
+    - formatOutput(output)
+        - returns response
+            - ---------- Seus Gastos ----------
+              ---------------------------------
+              Valor: 29,99
+              Tipo: Compras
+              Data: 20/10/2005
+              Descrição: Camisa do Atlético
+              ---------------------------------
+
+2 - datebase:
+    
+    - store(expense)
+        - returns "Gasto armazenado com sucesso"
+
+        - print(e)
+          returns "Algum erro ocorreu ao armazenar o gasto."
+    
+    - showAll()
+        - returns response
+        
+    - showFilter(filters)
+        - returns response
+
+3 - main:
+
+    - /0
+        - shows menu
+
+    - /1
+        - show all expenses
+
+    - /2
+        - show filtered expenses
+
+        - conv_handler1 = ConversationHandler(
+              entry_points = [CommandHandler("2", readFilters)],
+              stages = {
+                  READTYPE: [MessageHandler(filters.TEXT & ~filters.COMMAND, filteringExpenses)]
+              }
+          )
+        
+    
