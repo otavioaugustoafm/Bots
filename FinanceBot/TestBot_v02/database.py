@@ -5,7 +5,7 @@ def createDataBase():
     try:
         # makes the connection with the db and create the .db in case it doesn't exists. 
         # "connection" receives an object and it will be used as a communication channel 
-        connection = sqlite3.connect("expenses.db")
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v02\expenses.db")
         # creates the "cursor", the object that executes the SQL commands
         cursor = connection.cursor()
         # executes the CREATE TABLE if it doesn't exists
@@ -29,7 +29,7 @@ def storeData(data):
     try:
         # makes the connection with the db and create the .db in case it doesn't exists. 
         # "connection" receives an object and it will be used as a communication channel 
-        connection = sqlite3.connect("expenses.db")
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v02expenses.db")
         # creates the "cursor", the object that executes the SQL commands
         cursor = connection.cursor()
         # execute the expense data insertion on the table
@@ -56,7 +56,7 @@ def showAllData():
     try:
         # makes the connection with the db and create the .db in case it doesn't exists. 
         # "connection" receives an object and it will be used as a communication channel 
-        connection = sqlite3.connect("expenses.db")
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v02expenses.db")
         # creates the "cursor", the object that executes the SQL commands
         cursor = connection.cursor()
         # execute the search on the table for all tuples
@@ -78,7 +78,7 @@ def filterByType(typeRead):
     try:
         # makes the connection with the db and create the .db in case it doesn't exists. 
         # "connection" receives an object and it will be used as a communication channel 
-        connection = sqlite3.connect("expenses.db")
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v02expenses.db")
         # creates the "cursor", the object that executes the SQL commands
         cursor = connection.cursor()
         # execute the search on the table for all tuples
@@ -99,7 +99,7 @@ def filterByType(typeRead):
 
 def filterByDate(formatedDate):
     try:
-        connection = sqlite3.connect("expenses.db")
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v02expenses.db")
         # creates the "cursor", the object that executes the SQL commands
         cursor = connection.cursor()
         # execute the search on the table for all tuples
@@ -132,7 +132,7 @@ def filterByDate(formatedDate):
     
 def sumDayPeriod(dayOrPeriod):
     try:
-        connection = sqlite3.connect("expenses.db")
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v02expenses.db")
         # creates the "cursor", the object that executes the SQL commands
         cursor = connection.cursor()
         treatedDate = dayOrPeriod.split(" a ")
