@@ -6,7 +6,7 @@ import database
 import validations
 import inputProcessing
 
-TOKEN = "N/A"
+TOKEN = "N;A"
 
 GO_TO_FILTERING = 0
 
