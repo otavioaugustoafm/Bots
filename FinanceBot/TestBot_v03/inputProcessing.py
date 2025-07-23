@@ -48,10 +48,74 @@ def outputProcesser(list):
         Date = Date.strftime("%d/%m/%Y")
         if not Description:
             Description = "Nenhuma"
-        print(Description)
         output += f"Valor: {Value:.2f}\n"
         output += f"Tipo: {Type}\n"
         output += f"Data: {Date}\n"
         output += f"Descrição: {Description}\n"
         output += "---------------------------------\n"
     return output
+
+def filterProcesser(input):
+    try:
+        filters = {
+            "Type": None,
+            "Date1": None,
+            "Date2": None
+        }
+        parts = input.split(" ", 2)
+        type = validations.checkType(parts[0])
+        if type is False:
+            date1 = validations.checkDate(parts[0])
+        if type:
+            filters["Type"] = type
+            if len(parts) > 1:
+                date1 = validations.checkDate(parts[1])
+                if date1:
+                    try:
+                        date2 = validations.checkDate(parts[2])
+                        if date2:
+                            if date1 > date2:
+                                date1, date2 = date2, date2
+                        else: 
+                            return "Segunda data inválida."
+                        date1 = date1.strftime("%Y-%m-%d")
+                        date2 = date2.strftime("%Y-%m-%d")
+                        filters["Date1"] = date1
+                        filters["Date2"] = date2
+                    except IndexError:
+                        date1 = date1.strftime("%Y-%m-%d")
+                        filters["Date1"] = date1
+                else: 
+                    return "Primeira data inválida."
+        elif date1:
+            if len(parts) > 1:
+                if date1:
+                    try:
+                        date2 = validations.checkDate(parts[1])
+                        if date2:
+                            if date1 > date2:
+                                date1, date2 = date2, date2
+                        else: 
+                            return "Segunda data inválida."
+                        date1 = date1.strftime("%Y-%m-%d")
+                        date2 = date2.strftime("%Y-%m-%d")
+                        filters["Date1"] = date1
+                        filters["Date2"] = date2
+                    except IndexError:
+                        date1 = date1.strftime("%Y-%m-%d")
+                        filters["Date1"] = date1
+                else: 
+                    return "Primeira data inválida."
+            elif len(parts) == 1:
+                if date1:
+                    date1 = date1.strftime("%Y-%m-%d")
+                    filters["Date1"] = date1
+                else:
+                    return "Data inválida."
+        else:
+            return "Tipo ou Data inválido. Tente novamente."
+        print(filters)
+        return filters
+    except Exception as e:
+        print(e)
+        return "Algum erro ocorreu durante o processamento do filtro."

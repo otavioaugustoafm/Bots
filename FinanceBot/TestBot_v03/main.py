@@ -1,10 +1,16 @@
 from telegram import Update
+from datetime import datetime
 from telegram.ext import Application, CommandHandler, MessageHandler, ConversationHandler, filters, ContextTypes
 import asyncio
 import database
+import validations
 import inputProcessing
 
 TOKEN = "N/A"
+
+GO_TO_FILTERING = 0
+
+GO_TO_SUM = 1
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("---------- Bot de Finanças ----------\n\nInsira os dados do seu gasto enviando uma " \
@@ -37,18 +43,90 @@ async def showAll(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         print(e)
 
+async def readFilters(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    caller = update.message.text
+    if caller == "/2":
+        await update.message.reply_text("Digite o que quer filtrar no seguinte modelo:\n\nTIPO DATA1 DATA2")
+        return GO_TO_FILTERING
+    if caller == "/3":
+        await update.message.reply_text("Digite o que quer somar no seguinte modelo:\n\nTIPO DATA1 DATA2")
+        return GO_TO_SUM
+    
+async def showFiltered(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        input = update.message.text
+        filters = inputProcessing.filterProcesser(input)
+        if isinstance(filters, str):
+            await update.message.reply_text(filters)
+            return GO_TO_FILTERING
+        output = database.showFiltered(filters)
+        formatedOutput = inputProcessing.outputProcesser(output)
+        if output:
+            print("Mostrando gastos filtrados.")
+            await update.message.reply_text(formatedOutput)
+            return ConversationHandler.END
+        else:
+            print("Tabela vazia.") 
+            await update.message.reply_text("Nenhum gasto encontrado com esses filtros.")
+            return ConversationHandler.END
+    except Exception as e:
+        print(e)
+        return ConversationHandler.END
+
+async def showSum(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        input = update.message.text
+        filters = inputProcessing.filterProcesser(input)
+        if isinstance(filters, str):
+            await update.message.reply_text(filters)
+            return GO_TO_SUM
+        output = database.showSum(filters)
+        total = output[0] if output and output[0] is not None else 0
+        type = filters["Type"] if filters["Type"] is not None else "Todos os tipos."
+        if output is None:
+            print("Nenhum gasto encontrado para a soma.") 
+            await update.message.reply_text("Nenhum gasto encontrado com esses filtros.")
+            return ConversationHandler.END
+        if filters["Date1"] is not None:
+            date1 = datetime.strptime(filters["Date1"], '%Y-%m-%d')
+            date1 = date1.strftime("%d/%m/%Y")
+        else:
+            date1 = "Sem data início."
+        if filters["Date2"] is not None:
+            date2 = datetime.strptime(filters["Date2"], '%Y-%m-%d')
+            date2 = date2.strftime("%d/%m/%Y")
+        else:
+            date2 = "Sem data final."
+        formatedOutput = f"---------------------------------\nTipo: {type}\nDe: {date1}\nAté: {date2}\nTotal: {total:.2f}\n---------------------------------"
+        if output:
+            print("Mostrando gastos filtrados.")
+            await update.message.reply_text(formatedOutput)
+            return ConversationHandler.END
+    except Exception as e:
+        print(e)
+        return ConversationHandler.END
+
 def main():
     print("Iniciando o bot...")
     database.createTable()
     application = Application.builder().token(TOKEN).build()
     application.add_handler(CommandHandler("0", menu))
     application.add_handler(CommandHandler("1", showAll))
-    #application.add_handler(CommandHandler("2", showFiltered))
-    #application.add_handler(CommandHandler("3", showSum))
+    conv_handler1 = ConversationHandler(
+        entry_points = [
+            CommandHandler("2", readFilters),
+            CommandHandler("3", readFilters) 
+        ],
+        states = {
+            GO_TO_FILTERING: [MessageHandler(filters.TEXT & ~filters.COMMAND, showFiltered)],
+            GO_TO_SUM: [MessageHandler(filters.TEXT & ~filters.COMMAND, showSum)]
+        },
+        fallbacks = []
+    )
+    application.add_handler(conv_handler1)
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, store))
     application.run_polling()
     print("Finalizando o bot...")
-
 
 if __name__ == "__main__":
     main()
