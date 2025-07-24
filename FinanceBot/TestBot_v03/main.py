@@ -6,7 +6,7 @@ import database
 import validations
 import inputProcessing
 
-TOKEN = "7541472680:AAFa5GN0m9iI1NBccjfz21hBBj2z287otb4"
+TOKEN = "N/A"
 
 GO_TO_FILTERING = 0
 
