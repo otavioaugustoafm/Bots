@@ -43,7 +43,7 @@ def inputProcesser(input):
 def outputProcesser(list):
     output = "---------- Seus Gastos ----------\n"
     for expenseOnList in list:
-        Value, Type, Date, Description = expenseOnList
+        Value, Type, Date, Description, ID_Expense = expenseOnList
         Date = datetime.strptime(Date, "%Y-%m-%d")
         Date = Date.strftime("%d/%m/%Y")
         if not Description:
@@ -52,6 +52,22 @@ def outputProcesser(list):
         output += f"Tipo: {Type}\n"
         output += f"Data: {Date}\n"
         output += f"Descrição: {Description}\n"
+        output += "---------------------------------\n"
+    return output
+
+def outputProcesserID(list):
+    output = "---------- Seus Gastos ----------\n"
+    for expenseOnList in list:
+        Value, Type, Date, Description, ID_Expense = expenseOnList
+        Date = datetime.strptime(Date, "%Y-%m-%d")
+        Date = Date.strftime("%d/%m/%Y")
+        if not Description:
+            Description = "Nenhuma"
+        output += f"Valor: {Value:.2f}\n"
+        output += f"Tipo: {Type}\n"
+        output += f"Data: {Date}\n"
+        output += f"Descrição: {Description}\n"
+        output += f"ID Para remoção: {ID_Expense}\n"
         output += "---------------------------------\n"
     return output
 

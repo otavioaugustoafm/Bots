@@ -42,7 +42,7 @@ def showAll():
         connection = sqlite3.connect(r"FinanceBot\TestBot_v03\Expense.db")
         cursor = connection.cursor()
         cursor.execute("""
-            SELECT Value, Type, Date, Description
+            SELECT Value, Type, Date, Description, ID_Expense
             FROM Expenses
             ORDER BY Date ASC
         """)
@@ -60,7 +60,7 @@ def showFiltered(filters):
         cursor = connection.cursor()
         if filters["Type"] is not None and filters["Date1"] is not None and filters["Date2"] is not None:
             cursor.execute("""
-                SELECT Value, Type, Date, Description
+                SELECT Value, Type, Date, Description, ID_Expense
                 FROM Expenses
                 WHERE Type == ?
                 AND Date BETWEEN ? AND ?
@@ -68,14 +68,14 @@ def showFiltered(filters):
             """, (filters["Type"], filters["Date1"], filters["Date2"]))
         elif filters["Date1"] is not None and filters["Date2"] is not None:
             cursor.execute("""
-                SELECT Value, Type, Date, Description
+                SELECT Value, Type, Date, Description, ID_Expense
                 FROM Expenses
                 WHERE Date BETWEEN ? AND ?
                 ORDER BY Date ASC
             """, (filters["Date1"], filters["Date2"]))
         elif filters["Date1"] is not None and filters["Type"] is not None:
             cursor.execute("""
-                SELECT Value, Type, Date, Description
+                SELECT Value, Type, Date, Description, ID_Expense
                 FROM Expenses
                 WHERE Date == ?
                 AND Type == ?
@@ -83,14 +83,14 @@ def showFiltered(filters):
             """, (filters["Date1"], filters["Type"]))
         elif filters["Date1"] is not None:
             cursor.execute("""
-                SELECT Value, Type, Date, Description
+                SELECT Value, Type, Date, Description, ID_Expense
                 FROM Expenses
                 WHERE Date == ?
                 ORDER BY Date ASC
             """, (filters["Date1"],))
         elif filters["Type"] is not None:
             cursor.execute("""
-                SELECT Value, Type, Date, Description
+                SELECT Value, Type, Date, Description, ID_Expense
                 FROM Expenses
                 WHERE Type == ?
                 ORDER BY Date ASC
@@ -143,6 +143,21 @@ def showSum(filters):
         connection.close()
         print("Consulta de soma de gastos filtrados realizada com sucesso.")
         return results
+    except Exception as e:
+        print(e)
+        return False
+    
+def remove(id):
+    try:
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v03\Expense.db")
+        cursor = connection.cursor()
+        cursor.execute("""
+            DELETE FROM Expenses
+            WHERE ID_Expense == ?
+        """, (id,))
+        connection.commit()
+        connection.close()
+        return True
     except Exception as e:
         print(e)
         return False

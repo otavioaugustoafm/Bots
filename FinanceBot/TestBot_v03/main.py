@@ -6,11 +6,13 @@ import database
 import validations
 import inputProcessing
 
-TOKEN = "N/A"
+TOKEN = "7541472680:AAFa5GN0m9iI1NBccjfz21hBBj2z287otb4"
 
 GO_TO_FILTERING = 0
 
 GO_TO_SUM = 1
+
+REMOVE = 0
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("---------- Bot de Finanças ----------\n\nInsira os dados do seu gasto enviando uma " \
@@ -106,6 +108,26 @@ async def showSum(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print(e)
         return ConversationHandler.END
 
+async def readIdToRemove(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    output = database.showAll()
+    if output == []:
+        await update.message.reply_text("Nenhum gasto encontrado para remover.")
+        return ConversationHandler.END
+    output = inputProcessing.outputProcesserID(output)
+    await update.message.reply_text(output + "Para excluir um gasto, digite o ID correspondente.")
+    return REMOVE
+
+async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    input = update.message.text
+    true = database.remove(input)
+    print(true)
+    if true:
+        await update.message.reply_text("Gasto removido com sucesso.")
+    else:
+        await update.message.reply_text("Algum problema ocorreu ao remover o gasto.")
+    return ConversationHandler.END
+    
+
 def main():
     print("Iniciando o bot...")
     database.createTable()
@@ -123,7 +145,15 @@ def main():
         },
         fallbacks = []
     )
+    conv_handler2 = ConversationHandler(
+        entry_points = [CommandHandler("4", readIdToRemove)],
+        states = {
+            REMOVE: [MessageHandler(filters.TEXT & ~filters.COMMAND, remove)]
+        },
+        fallbacks = []
+    )
     application.add_handler(conv_handler1)
+    application.add_handler(conv_handler2)
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, store))
     application.run_polling()
     print("Finalizando o bot...")
