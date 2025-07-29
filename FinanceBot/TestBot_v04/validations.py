@@ -4,37 +4,36 @@ import database
 import asyncio
 import main
 
-def checkType(type): # Type -> String
+def checkType(type): # Type is a String
     try:
         TYPES = {"ALIMENTAÇÃO", "TRANSPORTE", "COMPRAS", "OUTROS"}
-        if type.upper in {"ALIMENTACAO", "ALIMENTAÇAO", "ALIMENTACÃO"}:
-            type == "ALIMENTAÇÃO"
-        if type.upper in TYPES:
-            print("Tipo válido.")
-            return type.capitalize()
+        if type.upper() in {"ALIMENTACAO", "ALIMENTAÇAO", "ALIMENTACÃO"}:
+            type = "ALIMENTAÇÃO"
+        if type.upper() in TYPES:
+            type = type.capitalize()
+            print(f"Tipo: {type}\nTipo válido.\n")
+            return type
         else:
-            print("Tipo inválido.")
+            print(f"Tipo: {type}\nTipo inválido.")
             return None
     except Exception as e:
         print(e)
         return False
     
-def checkDate(date): # Date -> String
-    print(date)
+def checkDate(date): # Date is a String
+    print(f"Data: {date}")
     try:
         date = datetime.strptime(date, '%d/%m/%Y').date()
         date = datetime.strftime(date, '%Y-%m-%d')
-        print("Data válida. (Com ano)")
-        print(date)
+        print("Data válida. (Com ano)\n")
         return date
-    except Exception as e:
+    except:
         try:
             currentYear = datetime.now().year
             stringDate = f"{date}/{currentYear}"
             date = datetime.strptime(stringDate, '%d/%m/%Y')
             date = datetime.strftime(date, '%Y-%m-%d')
-            print("Data válida. (Sem ano)")
-            print(date)
+            print("Data válida. (Sem ano)\n")
             return date
         except Exception as e:
             print("Data inválida")
