@@ -35,6 +35,6 @@ def checkDate(date): # Date is a String
             date = datetime.strftime(date, '%Y-%m-%d')
             print("Data válida. (Sem ano)\n")
             return date
-        except Exception as e:
-            print("Data inválida")
-            return False
+        except:
+            print("Data inválida\n")
+            return None

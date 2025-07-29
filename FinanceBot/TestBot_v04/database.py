@@ -68,3 +68,57 @@ def showAll(input):
     except Exception as e:
         print(f"Erro ao mostrar todos gastos:\n{e}\n---------------------------------")
         return False
+    
+def showFiltered(filters):
+    print("Procurando gastos filtrados...\n")
+    try:
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v04\ExpensesTable.db")
+        cursor = connection.cursor()
+        type = filters["Type"]; date1 = filters["Date1"]; date2 = filters["Date2"]
+        sqlCommand = "SELECT Value, Type, Date, Description FROM Expenses WHERE "
+        if type and date1 and date2:
+            sqlCommand += "Type = ? AND Date BETWEEN ? AND ?"
+            cursor.execute(sqlCommand, [type, date1, date2])
+        elif date1 and date2:
+            sqlCommand += "Date BETWEEN ? AND ?"
+            cursor.execute(sqlCommand, [date1, date2])
+        elif type:
+            sqlCommand += "Type = ?"
+            cursor.execute(sqlCommand, [type,])
+        elif date1:
+            sqlCommand += "Date = ?"
+            cursor.execute(sqlCommand, [date1,])
+        results = cursor.fetchall()
+        connection.close()
+        print("Procura concluída.\n---------------------------------")
+        return results
+    except Exception as e:
+        print(f"Erro ao mostrar gastos filtrados:\n{e}\n---------------------------------")
+        return False
+    
+def showSum(filters):
+    print("Procurando a soma dos gastos filtrados...\n")
+    try:
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v04\ExpensesTable.db")
+        cursor = connection.cursor()
+        type = filters["Type"]; date1 = filters["Date1"]; date2 = filters["Date2"]
+        sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE "
+        if type and date1 and date2:
+            sqlCommand += "Type = ? AND Date BETWEEN ? AND ?"
+            cursor.execute(sqlCommand, [type, date1, date2])
+        elif date1 and date2:
+            sqlCommand += "Date BETWEEN ? AND ?"
+            cursor.execute(sqlCommand, [date1, date2])
+        elif type:
+            sqlCommand += "Type = ?"
+            cursor.execute(sqlCommand, [type,])
+        elif date1:
+            sqlCommand += "Date = ?"
+            cursor.execute(sqlCommand, [date1,])
+        results = cursor.fetchone()
+        connection.close()
+        print("Procura concluída.\n---------------------------------")
+        return results
+    except Exception as e:
+        print(f"Erro ao mostrar gastos filtrados:\n{e}\n---------------------------------")
+        return False
