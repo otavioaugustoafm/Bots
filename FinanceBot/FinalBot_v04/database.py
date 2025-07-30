@@ -8,7 +8,7 @@ import main
 def createDatabase():
     print("---------------------------------\nCriando tabela...\n")
     try:
-        connection = sqlite3.connect(r"FinanceBot\Testbot_v04\ExpensesTable.db")
+        connection = sqlite3.connect(r"FinanceBot\FinalBot_v04\ExpensesTable.db")
         cursor = connection.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Expenses (
@@ -31,7 +31,7 @@ def store(dict):
     print("Inserindo gasto...\n")
     try:
         Value = dict["Value"]; Type = dict["Type"]; Date = dict["Date"]; Description = dict["Description"]
-        connection = sqlite3.connect(r"FinanceBot\TestBot_v04\ExpensesTable.db")
+        connection = sqlite3.connect(r"FinanceBot\FinalBot_v04\ExpensesTable.db")
         cursor = connection.cursor()
         if Date is None:
             Date = datetime.now().date()
@@ -52,7 +52,7 @@ def store(dict):
 def showAll(input):
     print("Procurando gastos...\n")
     try:
-        connection = sqlite3.connect(r"FinanceBot\TestBot_v04\ExpensesTable.db")
+        connection = sqlite3.connect(r"FinanceBot\FinalBot_v04\ExpensesTable.db")
         cursor = connection.cursor()
         sqlCommand = "SELECT "
         if input == "/1":
@@ -72,7 +72,7 @@ def showAll(input):
 def showFiltered(filters):
     print("Procurando gastos filtrados...\n")
     try:
-        connection = sqlite3.connect(r"FinanceBot\TestBot_v04\ExpensesTable.db")
+        connection = sqlite3.connect(r"FinanceBot\FinalBot_v04\ExpensesTable.db")
         cursor = connection.cursor()
         type = filters["Type"]; date1 = filters["Date1"]; date2 = filters["Date2"]
         sqlCommand = "SELECT Value, Type, Date, Description FROM Expenses WHERE "
@@ -99,7 +99,7 @@ def showFiltered(filters):
 def showSum(filters):
     print("Procurando a soma dos gastos filtrados...\n")
     try:
-        connection = sqlite3.connect(r"FinanceBot\TestBot_v04\ExpensesTable.db")
+        connection = sqlite3.connect(r"FinanceBot\FinalBot_v04\ExpensesTable.db")
         cursor = connection.cursor()
         type = filters["Type"]; date1 = filters["Date1"]; date2 = filters["Date2"]
         sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE "
@@ -126,7 +126,7 @@ def showSum(filters):
 def remove(id):
     print("Realizando remoção de gasto...\n")
     try:
-        connection = sqlite3.connect(r"FinanceBot\TestBot_v04\ExpensesTable.db")
+        connection = sqlite3.connect(r"FinanceBot\FinalBot_v04\ExpensesTable.db")
         cursor = connection.cursor()
         cursor.execute("""
             DELETE FROM Expenses 
