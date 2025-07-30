@@ -53,7 +53,7 @@ def inputProcessing(input):
 def outputProcessing(list):
     print("Processando saída...")
     try:
-        output = "---------- Seus Gastos ----------\n"
+        output = "\n---------- Seus Gastos ----------\n"
         for item in list:
             try:
                 Id, Value, Type, Date, Description = item
@@ -64,7 +64,7 @@ def outputProcessing(list):
                 Description = "Nenhuma"
             Date = datetime.strptime(Date, '%Y-%m-%d')
             Date = datetime.strftime(Date, '%d/%m/%Y')
-            Value = str(Value).replace(".", ",")
+            Value = f"{Value:.2f}".replace(".", ",")
             output += f"Valor: R${Value}\n"
             output += f"Tipo: {Type}\n"
             output += f"Data: {Date}\n"
@@ -94,6 +94,7 @@ def filtersProcessing(filters):
             filters = filters.split(" ", 1)
             type = validations.checkType(filters[0])
             if type is None:
+                print(f"Processamento finalizado:\n{filters}\n---------------------------------")
                 return "Tipo inválido."
             if len(filters) > 1:
                 match = re.match(r"^(\d{1,2}/\d{1,2}(?:/\d{4})?)(?:\s(\d{1,2}/\d{1,2}(?:/\d{4})?))?$", filters[1])

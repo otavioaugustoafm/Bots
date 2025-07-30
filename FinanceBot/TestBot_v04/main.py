@@ -7,7 +7,7 @@ import asyncio
 
 TOKEN = "N/A"
 
-GO_TO_FILTERING, GO_TO_SUM = range(2)
+GO_TO_FILTERING, GO_TO_SUM, GO_TO_REMOVE = range(3)
 
 async def showMenu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
@@ -43,7 +43,7 @@ async def showAll(update: Update, context: ContextTypes.DEFAULT_TYPE): # /1
         print(e)
         return False
     
-async def readFilters(update: Update, context: ContextTypes.DEFAULT_TYPE): # /2
+async def readInput(update: Update, context: ContextTypes.DEFAULT_TYPE): # /2 /3 /4
     try:
         input = update.message.text
         if input == "/2":
@@ -52,6 +52,14 @@ async def readFilters(update: Update, context: ContextTypes.DEFAULT_TYPE): # /2
         elif input == "/3":
             await update.message.reply_text("Digite como quer filtrar a soma.\n\nExemplos:\n\nTipo e Período:\nTIPO DATA1 DATA2\n\nTipo e Data:\nTIPO DATA\n\nPeríodo:\nDATA1 DATA2\n\nTipo:\nTIPO\n\nData:\nDATA\n\n")
             return GO_TO_SUM
+        elif input == "/4":
+            output = database.showAll(input)
+            if output == []:
+                await update.message.reply_text("Nenhum gasto registrado até o momento.")
+                return
+            output = processing.outputProcessing(output)
+            await update.message.reply_text(f"{output}\nSelecione o ID do gasto que você quer apagar.")
+            return GO_TO_REMOVE
     except Exception as e:
         print(e)
         return False
@@ -75,7 +83,7 @@ async def showFiltered(update: Update, context: ContextTypes.DEFAULT_TYPE): # /2
         return ConversationHandler.END
     except Exception as e:
         print(e)
-        return False
+        return ConversationHandler.END
 
 async def showSum(update: Update, context: ContextTypes.DEFAULT_TYPE): # /3
     try:   
@@ -96,20 +104,31 @@ async def showSum(update: Update, context: ContextTypes.DEFAULT_TYPE): # /3
         return ConversationHandler.END
     except Exception as e:
         print(e)
-        return False
-# async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE): # /4
+        return ConversationHandler.END
+
+async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE): # /4
+    try:
+        input = update.message.text
+        output = database.remove(input)
+        await update.message.reply_text(output)
+        return ConversationHandler.END
+    except Exception as e:
+        print(e)
+        return ConversationHandler.END
 
 def main():
     database.createDatabase()
     application = Application.builder().token(TOKEN).build()
     conv_handler = ConversationHandler(
         entry_points = [
-            CommandHandler("2", readFilters),
-            CommandHandler("3", readFilters)
+            CommandHandler("2", readInput),
+            CommandHandler("3", readInput),
+            CommandHandler("4", readInput)
             ],
         states = {
             GO_TO_FILTERING: [MessageHandler(filters.TEXT & ~filters.COMMAND, showFiltered)],
-            GO_TO_SUM: [MessageHandler(filters.TEXT & ~filters.COMMAND, showSum)]
+            GO_TO_SUM: [MessageHandler(filters.TEXT & ~filters.COMMAND, showSum)],
+            GO_TO_REMOVE: [MessageHandler(filters.TEXT & ~filters.COMMAND, remove)]
             },
         fallbacks = []
     )

@@ -57,7 +57,7 @@ def showAll(input):
         sqlCommand = "SELECT "
         if input == "/1":
             sqlCommand += "Value, Type, Date, Description "
-        elif input == "/3":
+        elif input == "/4":
             sqlCommand += "* "
         sqlCommand += "FROM Expenses ORDER BY Date ASC"
         cursor.execute(sqlCommand)
@@ -122,3 +122,29 @@ def showSum(filters):
     except Exception as e:
         print(f"Erro ao mostrar gastos filtrados:\n{e}\n---------------------------------")
         return False
+    
+def remove(id):
+    print("Realizando remoção de gasto...\n")
+    try:
+        connection = sqlite3.connect(r"FinanceBot\TestBot_v04\ExpensesTable.db")
+        cursor = connection.cursor()
+        cursor.execute("""
+            DELETE FROM Expenses 
+            WHERE ID = ?
+        """,(id,))
+        deleted = cursor.rowcount
+        if deleted > 0:
+            print("Remoção concluída.\n---------------------------------")
+            connection.commit()
+            connection.close()
+            return "Remoção concluída."
+        else:
+            print("Operação concluída: Nada removido.\n---------------------------------")
+            connection.commit()
+            connection.close()
+            return "Nenhum gasto relacionado ao ID escolhido."
+    except Exception as e:
+        print(f"Erro ao remover gasto:\n{e}\n---------------------------------")
+        return False
+    
+    

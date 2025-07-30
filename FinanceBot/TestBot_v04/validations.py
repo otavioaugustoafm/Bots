@@ -14,7 +14,7 @@ def checkType(type): # Type is a String
             print(f"Tipo: {type}\nTipo válido.\n")
             return type
         else:
-            print(f"Tipo: {type}\nTipo inválido.")
+            print(f"Tipo: {type}\nTipo inválido.\n")
             return None
     except Exception as e:
         print(e)
