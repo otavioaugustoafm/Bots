@@ -99,8 +99,8 @@ async def showSum(update: Update, context: ContextTypes.DEFAULT_TYPE): # /3
         elif sum is False:
             await update.message.reply_text("Algum erro ocorreu na busca no banco de dados.")
             return ConversationHandler.END
-        sum = f"{sum[0]:.2f}".replace(".")
-        output = f"--------- Soma dos Gastos ---------\nTipo: {filters["Type"]}\nDe: {filters["Date1"]}\nAté: {filters["Date2"]}\nSoma: R${sum[0]:.2f}\n---------------------------------"
+        sum = f"{sum[0]:.2f}".replace(".", ",")
+        output = f"--------- Soma dos Gastos ---------\nTipo: {filters["Type"]}\nDe: {filters["Date1"]}\nAté: {filters["Date2"]}\nSoma: R${sum}\n---------------------------------"
         await update.message.reply_text(output)
         return ConversationHandler.END
     except Exception as e:
