@@ -2,7 +2,7 @@ from datetime import datetime
 
 def checkType(type): # Type is a String
     try:
-        TYPES = {"ALIMENTAÇÃO", "TRANSPORTE","NAMORO", "COMPRAS", "MENSAL", "OUTROS"}
+        TYPES = {"ALIMENTAÇÃO", "TRANSPORTE","NAMORO", "COMPRAS", "MENSAL", "EXTRA", "OUTROS"}
         if type.upper() in {"ALIMENTACAO", "ALIMENTAÇAO", "ALIMENTACÃO"}:
             type = "ALIMENTAÇÃO"
         if type.upper() in TYPES:
