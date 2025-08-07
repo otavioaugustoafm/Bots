@@ -1,9 +1,5 @@
 from datetime import datetime
-import validations 
-import processing
 import sqlite3
-import asyncio
-import main
 
 def createDatabase():
     print("---------------------------------\nCriando tabela...\n")

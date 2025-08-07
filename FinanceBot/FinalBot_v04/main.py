@@ -1,9 +1,7 @@
 from telegram.ext import Application, ConversationHandler, MessageHandler, CommandHandler, filters, ContextTypes
 from telegram import Update
-import validations 
 import processing
 import database
-import asyncio
 
 TOKEN = "N/A"
 
@@ -12,7 +10,7 @@ GO_TO_FILTERING, GO_TO_SUM, GO_TO_REMOVE = range(3)
 async def showMenu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         print("Mostrando menu.\n---------------------------------")
-        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nDigite /1 para mostrar todos os gastos.\n\nDigite /2 para filtrar gastos.\n\nDigite /3 para somar gastos.\n\nDigite /4 para remover um gasto.\n-------------------------------------")
+        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nOs tipos disponíveis são: Alimentação, Transporte, Namoro, Compras, Mensal e Outros.\n\nDigite /1 para mostrar todos os gastos.\n\nDigite /2 para filtrar gastos.\n\nDigite /3 para somar gastos.\n\nDigite /4 para remover um gasto.\n-------------------------------------")
         return True
     except Exception as e:
         print(e)
@@ -99,7 +97,14 @@ async def showSum(update: Update, context: ContextTypes.DEFAULT_TYPE): # /3
         elif sum is False:
             await update.message.reply_text("Algum erro ocorreu na busca no banco de dados.")
             return ConversationHandler.END
-        output = f"--------- Soma dos Gastos ---------\nTipo: {filters["Type"]}\nDe: {filters["Date1"]}\nAté: {filters["Date2"]}\nSoma: R${sum[0]:.2f}\n---------------------------------"
+        if filters["Type"] is None:
+            filters["Type"] = "Nenhum"
+        if filters["Date1"] is None:
+            filters["Date1"] = "Nenhuma"
+        if filters["Date2"] is None:
+            filters["Date2"] = "Nenhuma"
+        sum = f"{sum[0]:.2f}".replace(".", ",")
+        output = f"--------- Soma dos Gastos ---------\nTipo: {filters["Type"]}\nDe: {filters["Date1"]}\nAté: {filters["Date2"]}\nSoma: R${sum}\n---------------------------------"
         await update.message.reply_text(output)
         return ConversationHandler.END
     except Exception as e:

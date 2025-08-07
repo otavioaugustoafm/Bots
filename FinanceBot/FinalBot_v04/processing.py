@@ -1,8 +1,5 @@
 from datetime import datetime
 import validations 
-import database
-import asyncio
-import main
 import re
 
 def inputProcessing(input):
@@ -30,7 +27,8 @@ def inputProcessing(input):
                 except:
                     description = None
                     date = match.groups()
-                if validations.checkDate(date) is False:
+                date = validations.checkDate(date)
+                if date is None:
                     return "Data inválida."
             else:
                 date = None

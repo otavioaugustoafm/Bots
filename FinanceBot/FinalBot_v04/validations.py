@@ -1,12 +1,8 @@
 from datetime import datetime
-import processing
-import database
-import asyncio
-import main
 
 def checkType(type): # Type is a String
     try:
-        TYPES = {"ALIMENTAÇÃO", "TRANSPORTE", "COMPRAS", "OUTROS"}
+        TYPES = {"ALIMENTAÇÃO", "TRANSPORTE","NAMORO", "COMPRAS", "MENSAL", "OUTROS"}
         if type.upper() in {"ALIMENTACAO", "ALIMENTAÇAO", "ALIMENTACÃO"}:
             type = "ALIMENTAÇÃO"
         if type.upper() in TYPES:
