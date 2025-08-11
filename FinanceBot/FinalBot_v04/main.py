@@ -4,14 +4,14 @@ from telegram import Update
 import processing
 import database
 
-TOKEN = "N/A"
+TOKEN = "8030257844:AAEzUlXSamdDxZHqA1tnSSk9zMc9fpSWEbA"
 
 GO_TO_FILTERING, GO_TO_SUM, GO_TO_REMOVE = range(3)
 
 async def showMenu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         print("Mostrando menu.\n---------------------------------")
-        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nOs tipos disponíveis são: Alimentação, Transporte, Namoro, Compras, Mensal, Extra e Outros.\n\nDigite /1 para mostrar todos os gastos.\n\nDigite /2 para filtrar gastos.\n\nDigite /3 para somar gastos.\n\nDigite /4 para remover um gasto.\n-------------------------------------")
+        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nOs tipos disponíveis são: Alimentação, Transporte, Namoro, Compras, Extra e Outros.\n\nDigite /1 para mostrar todos os gastos.\n\nDigite /2 para filtrar gastos.\n\nDigite /3 para somar gastos.\n\nDigite /4 para remover um gasto.\n-------------------------------------")
         return True
     except Exception as e:
         print(e)
