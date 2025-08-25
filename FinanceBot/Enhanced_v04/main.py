@@ -4,7 +4,7 @@ from telegram import Update
 import processing
 import database
 
-TOKEN = "8030257844:AAEzUlXSamdDxZHqA1tnSSk9zMc9fpSWEbA"
+TOKEN = "N/A"
 
 GO_TO_FILTERING, GO_TO_SUM, GO_TO_REMOVE = range(3)
 
