@@ -6,7 +6,7 @@ import database
 
 TOKEN = "N/A"
 
-GO_TO_FILTERING, GO_TO_SUM, GO_TO_REMOVE = range(3)
+GO_TO_FILTERING, GO_TO_SUM, GO_TO_REMOVE, GO_TO_MONTH = range(4)
 
 async def showMenu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
@@ -59,6 +59,9 @@ async def readInput(update: Update, context: ContextTypes.DEFAULT_TYPE): # /2 /3
             output = processing.outputProcessing(output)
             await update.message.reply_text(f"{output}\nSelecione o ID do gasto que você quer apagar.")
             return GO_TO_REMOVE
+        elif input == "/1":
+            await update.message.reply_text(f"Qual mês quer buscar os gastos essenciais?")
+            return GO_TO_MONTH
     except Exception as e:
         print(e)
         return False
@@ -117,6 +120,42 @@ async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE): # /4
         print(e)
         return ConversationHandler.END
 
+async def showMonth(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        input = update.message.text
+        month = processing.monthProcessing(input)
+        if isinstance(month, str):
+            await update.message.reply_text("Mês Inválido. Tente novamente:")
+            return GO_TO_MONTH
+        currentYear = datetime.now().year
+        date = f"4/{month}/{currentYear}"
+        nextDate = '3/'
+        if month == 12:
+            nextDate += f"1/{currentYear}"
+        else:
+            nextDate += f"{month + 1}/{currentYear}"
+        date = datetime.strptime(date, "%d/%m/%Y").date()
+        date = datetime.strftime(date, "%Y-%m-%d")
+        nextDate = datetime.strptime(nextDate, "%d/%m/%Y").date()
+        nextDate = datetime.strftime(nextDate, "%Y-%m-%d")
+        results1, sum1, results2, sum2 = database.showMonth(date, nextDate)
+        output = processing.outputProcessing(results1)
+        if sum1[0] is None:
+            output += f"\nNada relacionado aos tipos gerais nesse mês.\n---------------------------------\n\n"
+        else:
+            output += f"\nSoma dos Gastos Gerais: R${sum1[0]}\n---------------------------------\n\n"
+        output += processing.outputProcessing(results2)
+        if sum2[0] is None:
+            output += f"\nNada relacionado ao tipo Extra nesse mês.\n---------------------------------\n\n"
+        else:
+            output += f"\nSoma dos Gastos Extras: R${sum2[0]}\n---------------------------------\n\n"
+        await update.message.reply_text(output)
+        return ConversationHandler.END
+    except Exception as e:
+        print(e)
+        return ConversationHandler.END
+
+
 def main():
     database.createTable()
     application = Application.builder().token(TOKEN).build()
@@ -124,18 +163,20 @@ def main():
         entry_points = [
             CommandHandler("2", readInput),
             CommandHandler("3", readInput),
-            CommandHandler("4", readInput)
+            CommandHandler("4", readInput),
+            CommandHandler("1", readInput)
             ],
         states = {
             GO_TO_FILTERING: [MessageHandler(filters.TEXT & ~filters.COMMAND, showFiltered)],
             GO_TO_SUM: [MessageHandler(filters.TEXT & ~filters.COMMAND, showSum)],
-            GO_TO_REMOVE: [MessageHandler(filters.TEXT & ~filters.COMMAND, remove)]
+            GO_TO_REMOVE: [MessageHandler(filters.TEXT & ~filters.COMMAND, remove)],
+            GO_TO_MONTH: [MessageHandler(filters.TEXT & ~filters.COMMAND, showMonth)]
             },
         fallbacks = []
     )
     application.add_handler(conv_handler)
     application.add_handler(CommandHandler("start", showMenu))
-    application.add_handler(CommandHandler("1", showAll))
+    application.add_handler(CommandHandler("5", showAll))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, store))
     application.run_polling()
 

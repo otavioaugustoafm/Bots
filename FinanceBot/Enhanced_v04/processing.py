@@ -57,6 +57,17 @@ def filterProcessing(userInput):
         print(f"Erro ao processar o filtro:\n{e}")
         return False
 
+def monthProcessing(userInput):
+    try:
+        months = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]
+        month = userInput.upper()
+        if month in months:
+            position = months.index(month)
+            return position + 1
+        else:
+            return "Mês inválido."
+    except Exception as e:
+        print(f"Erro ao processar o mês:\n{e}")
 
 def recursiveMatch(userInput, typeList, dateList, option):
     try:

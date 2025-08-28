@@ -39,13 +39,39 @@ def store(dict):
         print(f"Erro ao armazenar gasto:\n{e}")
         return False
     
+def showMonth(date, nextDate):
+    print(date)
+    print(nextDate)
+    print("Mostrando gastos de um mês específico...")
+    try:
+        connection = sqlite3.connect((r"FinanceBot\Enhanced_v04\ExpensesTable.db"))
+        cursor = connection.cursor()
+        sqlCommand = "SELECT * FROM Expenses WHERE (Type = 'Namoro' OR Type = 'Outros' OR Type = 'Compras' OR Type = 'Transporte' OR Type = 'Comida') AND Date BETWEEN ? AND ?"
+        cursor.execute(sqlCommand, [date, nextDate])
+        results1 = cursor.fetchall()
+        sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE (Type = 'Namoro' OR Type = 'Outros' OR Type = 'Compras' OR Type = 'Transporte' OR Type = 'Comida') AND Date BETWEEN ? AND ?"
+        cursor.execute(sqlCommand, [date, nextDate])
+        sum1 = cursor.fetchone()
+        sqlCommand = "SELECT * FROM Expenses WHERE Type = 'Extra' AND Date BETWEEN ? AND ?"
+        cursor.execute(sqlCommand, [date, nextDate])
+        results2 = cursor.fetchall()
+        sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE Type = 'Extra' AND Date BETWEEN ? AND ?"
+        cursor.execute(sqlCommand, [date, nextDate])
+        sum2 = cursor.fetchone()
+        print("\nDados exibidos.\n--------------------")
+        connection.close()
+        return results1, sum1, results2, sum2
+    except Exception as e:
+        print(f"Erro ao mostrar os gastos de um mês específico:\n{e}")
+        return False
+
 def showAll(command):
     print("Mostrando todos gastos...")
     try:
         connection = sqlite3.connect((r"FinanceBot\Enhanced_v04\ExpensesTable.db"))
         cursor = connection.cursor()
         sqlCommand = "SELECT "
-        if command == "/1":
+        if command == "/5":
             sqlCommand += "Value, Type, Date, Description "
         elif command == "/4":
             sqlCommand += "* "
