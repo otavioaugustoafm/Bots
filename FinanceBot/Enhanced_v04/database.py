@@ -46,16 +46,16 @@ def showMonth(date, nextDate):
     try:
         connection = sqlite3.connect((r"FinanceBot\Enhanced_v04\ExpensesTable.db"))
         cursor = connection.cursor()
-        sqlCommand = "SELECT * FROM Expenses WHERE (Type = 'Namoro' OR Type = 'Outros' OR Type = 'Compras' OR Type = 'Transporte' OR Type = 'Comida') AND Date BETWEEN ? AND ?"
+        sqlCommand = "SELECT * FROM Expenses WHERE (Type = 'Namoro' OR Type = 'Outros' OR Type = 'Compras' OR Type = 'Transporte' OR Type = 'Comida') AND Date BETWEEN ? AND ? ORDER BY Date ASC"
         cursor.execute(sqlCommand, [date, nextDate])
         results1 = cursor.fetchall()
-        sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE (Type = 'Namoro' OR Type = 'Outros' OR Type = 'Compras' OR Type = 'Transporte' OR Type = 'Comida') AND Date BETWEEN ? AND ?"
+        sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE (Type = 'Namoro' OR Type = 'Outros' OR Type = 'Compras' OR Type = 'Transporte' OR Type = 'Comida') AND Date BETWEEN ? AND ? ORDER BY Date ASC"
         cursor.execute(sqlCommand, [date, nextDate])
         sum1 = cursor.fetchone()
-        sqlCommand = "SELECT * FROM Expenses WHERE Type = 'Extra' AND Date BETWEEN ? AND ?"
+        sqlCommand = "SELECT * FROM Expenses WHERE Type = 'Extra' AND Date BETWEEN ? AND ? ORDER BY Date ASC"
         cursor.execute(sqlCommand, [date, nextDate])
         results2 = cursor.fetchall()
-        sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE Type = 'Extra' AND Date BETWEEN ? AND ?"
+        sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE Type = 'Extra' AND Date BETWEEN ? AND ? ORDER BY Date ASC"
         cursor.execute(sqlCommand, [date, nextDate])
         sum2 = cursor.fetchone()
         print("\nDados exibidos.\n--------------------")

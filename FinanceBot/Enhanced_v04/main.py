@@ -4,14 +4,14 @@ from telegram import Update
 import processing
 import database
 
-TOKEN = "8030257844:AAEzUlXSamdDxZHqA1tnSSk9zMc9fpSWEbA"
+TOKEN = "N/A"
 
 GO_TO_FILTERING, GO_TO_SUM, GO_TO_REMOVE, GO_TO_MONTH = range(4)
 
 async def showMenu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         print("Mostrando menu.\n---------------------------------")
-        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nOs tipos disponíveis são: Namoro, Transporte, Comida, Compras, Extra e Outros.\n\nDigite /1 para mostrar todos os gastos.\n\nDigite /2 para filtrar gastos.\n\nDigite /3 para somar gastos.\n\nDigite /4 para remover um gasto.\n-------------------------------------")
+        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nOs tipos disponíveis são: Namoro, Transporte, Comida, Compras, Extra e Outros.\n\nDigite /1 mostrar os gastos e a soma deles em um mês.\n\nDigite /2 para filtrar gastos.\n\nDigite /3 para somar gastos.\n\nDigite /4 para remover um gasto.\n\nDigite /5 para mostrar todos os gastos.\n-------------------------------------")
         return True
     except Exception as e:
         print(e)
@@ -37,7 +37,10 @@ async def showAll(update: Update, context: ContextTypes.DEFAULT_TYPE): # /1
             await update.message.reply_text("Nenhum gasto registrado até o momento.")
             return
         output = processing.outputProcessing(output)
-        await update.message.reply_text(output)
+        try:
+            await update.message.reply_text(output)
+        except:
+            await update.message.reply_text("A quantidade de gastos ultrapassa o limite de tamanho da mensagem, infelizmente não é possível mostrá-los todos.\n\nUtilize a função /1 para filtrar por mês.")
     except Exception as e:
         print(e)
         return False
@@ -81,7 +84,10 @@ async def showFiltered(update: Update, context: ContextTypes.DEFAULT_TYPE): # /2
             await update.message.reply_text("Algum erro ocorreu na busca no banco de dados.")
             return ConversationHandler.END
         output = processing.outputProcessing(output)
-        await update.message.reply_text(output)
+        try:
+            await update.message.reply_text(output)
+        except:
+            await update.message.reply_text("A quantidade de gastos ultrapassa o limite de tamanho da mensagem, infelizmente não é possível mostrá-los todos.\n\nTente filtrar mais utilizando outros filtros ou utilize a função /1 para filtrar por mês, porém sem filtros.")
         return ConversationHandler.END
     except Exception as e:
         print(e)
@@ -121,7 +127,7 @@ async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE): # /4
         return ConversationHandler.END
 
 async def showMonth(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    try:
+    try:   
         input = update.message.text
         month = processing.monthProcessing(input)
         if isinstance(month, str):
@@ -139,22 +145,49 @@ async def showMonth(update: Update, context: ContextTypes.DEFAULT_TYPE):
         nextDate = datetime.strptime(nextDate, "%d/%m/%Y").date()
         nextDate = datetime.strftime(nextDate, "%Y-%m-%d")
         results1, sum1, results2, sum2 = database.showMonth(date, nextDate)
-        output = processing.outputProcessing(results1)
-        if sum1[0] is None:
-            output += f"\nNada relacionado aos tipos gerais nesse mês.\n---------------------------------\n\n"
-        else:
-            output += f"\nSoma dos Gastos Gerais: R${sum1[0]}\n---------------------------------\n\n"
-        output += processing.outputProcessing(results2)
-        if sum2[0] is None:
-            output += f"\nNada relacionado ao tipo Extra nesse mês.\n---------------------------------\n\n"
-        else:
-            output += f"\nSoma dos Gastos Extras: R${sum2[0]}\n---------------------------------\n\n"
-        await update.message.reply_text(output)
+        print(results1)
+        if results1 == [] and results2 == []:
+            await update.message.reply_text("Nenhum gasto nesse mês.")
+            return ConversationHandler.END
+        try: 
+            output = "Gastos Gerais:\n"
+            output += processing.outputProcessing(results1)
+            output += "Gastos Extras:\n\n"
+            output += processing.outputProcessing(results2)
+            if sum1[0] is None:
+                output += f"\nNada relacionado aos tipos gerais nesse mês.\n---------------------------------"
+            else:
+                output += f"\nSoma dos Gastos Gerais: R${sum1[0]}\n---------------------------------".replace(".", ",")
+            if sum2[0] is None:
+                output += f"\nNada relacionado ao tipo Extra nesse mês.\n---------------------------------"
+            else:
+                output += f"\nSoma dos Gastos Extras: R${sum2[0]}\n---------------------------------".replace(".", ",")
+            sum = sum1[0] + sum2[0]
+            sum = f"{sum:.2f}"
+            output += f"\nSoma total dos gastos: R${sum}\n---------------------------------".replace(".", ",")
+            await update.message.reply_text(output)
+        except:
+            output = "Gastos Gerais:\n"
+            output += processing.outputProcessing(results1)
+            await update.message.reply_text(output)
+            output = "Gastos Extras:\n\n"
+            output += processing.outputProcessing(results2)
+            if sum1[0] is None:
+                output += f"\nNada relacionado aos tipos gerais nesse mês.\n---------------------------------"
+            else:
+                output += f"\nSoma dos Gastos Gerais: R${sum1[0]}\n---------------------------------".replace(".", ",")
+            if sum2[0] is None:
+                output += f"\nNada relacionado ao tipo Extra nesse mês.\n---------------------------------"
+            else:
+                output += f"\nSoma dos Gastos Extras: R${sum2[0]}\n---------------------------------".replace(".", ",")
+            sum = sum1[0] + sum2[0]
+            sum = f"{sum:.2f}"
+            output += f"\nSoma total dos gastos: R${sum}\n---------------------------------\n".replace(".", ",")
+            await update.message.reply_text(output)
         return ConversationHandler.END
     except Exception as e:
         print(e)
         return ConversationHandler.END
-
 
 def main():
     database.createTable()
