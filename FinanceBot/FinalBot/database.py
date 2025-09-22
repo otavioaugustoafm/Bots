@@ -3,7 +3,7 @@ import sqlite3
 def createTable():
     print("--------------------\nCriando ou verificando tabela...")
     try:
-        connection = sqlite3.connect((r"FinanceBot\Enhanced_v04\ExpensesTable.db"))
+        connection = sqlite3.connect((r"Pessoais\Otávio\ExpensesTable.db"))
         cursor = connection.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Expenses (
@@ -24,7 +24,7 @@ def createTable():
 def store(dict):
     print("Armazenando gasto...")
     try:
-        connection = sqlite3.connect((r"FinanceBot\Enhanced_v04\ExpensesTable.db"))
+        connection = sqlite3.connect((r"Pessoais\Otávio\ExpensesTable.db"))
         cursor = connection.cursor()
         Value = dict["Value"]; Type = dict["Type"]; Date = dict["Date"]; Description = dict["Description"]
         cursor.execute("""
@@ -44,15 +44,15 @@ def showMonth(date, nextDate):
     print(nextDate)
     print("Mostrando gastos de um mês específico...")
     try:
-        connection = sqlite3.connect((r"FinanceBot\Enhanced_v04\ExpensesTable.db"))
+        connection = sqlite3.connect((r"Pessoais\Otávio\ExpensesTable.db"))
         cursor = connection.cursor()
-        sqlCommand = "SELECT * FROM Expenses WHERE (Type = 'Namoro' OR Type = 'Outros' OR Type = 'Compras' OR Type = 'Transporte' OR Type = 'Comida') AND Date BETWEEN ? AND ? ORDER BY Date ASC"
+        sqlCommand = "SELECT Value, Type, Date, Description FROM Expenses WHERE (Type = 'Namoro' OR Type = 'Outros' OR Type = 'Compras' OR Type = 'Transporte' OR Type = 'Comida') AND Date BETWEEN ? AND ? ORDER BY Date ASC"
         cursor.execute(sqlCommand, [date, nextDate])
         results1 = cursor.fetchall()
         sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE (Type = 'Namoro' OR Type = 'Outros' OR Type = 'Compras' OR Type = 'Transporte' OR Type = 'Comida') AND Date BETWEEN ? AND ? ORDER BY Date ASC"
         cursor.execute(sqlCommand, [date, nextDate])
         sum1 = cursor.fetchone()
-        sqlCommand = "SELECT * FROM Expenses WHERE Type = 'Extra' AND Date BETWEEN ? AND ? ORDER BY Date ASC"
+        sqlCommand = "SELECT Value, Type, Date, Description FROM Expenses WHERE Type = 'Extra' AND Date BETWEEN ? AND ? ORDER BY Date ASC"
         cursor.execute(sqlCommand, [date, nextDate])
         results2 = cursor.fetchall()
         sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE Type = 'Extra' AND Date BETWEEN ? AND ? ORDER BY Date ASC"
@@ -68,7 +68,7 @@ def showMonth(date, nextDate):
 def showAll(command):
     print("Mostrando todos gastos...")
     try:
-        connection = sqlite3.connect((r"FinanceBot\Enhanced_v04\ExpensesTable.db"))
+        connection = sqlite3.connect((r"Pessoais\Otávio\ExpensesTable.db"))
         cursor = connection.cursor()
         sqlCommand = "SELECT "
         if command == "/5":
@@ -88,7 +88,7 @@ def showAll(command):
 def showFiltered(typeList, dateList):
     print("Mostrando gastos filtrados...")
     try:
-        connection = sqlite3.connect((r"FinanceBot\Enhanced_v04\ExpensesTable.db"))
+        connection = sqlite3.connect((r"Pessoais\Otávio\ExpensesTable.db"))
         cursor = connection.cursor()
         sqlCommand = "SELECT Value, Type, Date, Description FROM Expenses WHERE "
         if typeList:
@@ -104,6 +104,7 @@ def showFiltered(typeList, dateList):
                 sqlCommand += f"Date = '{dateList[0]}'"
             elif len(dateList) == 2:
                 sqlCommand += f"Date BETWEEN '{dateList[0]}' AND '{dateList[1]}'"
+        sqlCommand += " ORDER BY Date ASC"
         cursor.execute(sqlCommand)
         results = cursor.fetchall()
         connection.close()
@@ -117,7 +118,7 @@ def showFiltered(typeList, dateList):
 def showSum(typeList, dateList):
     print("Mostrando gastos somados...")
     try:
-        connection = sqlite3.connect((r"FinanceBot\Enhanced_v04\ExpensesTable.db"))
+        connection = sqlite3.connect((r"Pessoais\Otávio\ExpensesTable.db"))
         cursor = connection.cursor()
         sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE "
         if typeList != []:
@@ -145,7 +146,7 @@ def showSum(typeList, dateList):
 def remove(id):
     print("Removendo gasto...\n")
     try:
-        connection = sqlite3.connect(r"FinanceBot\Enhanced_v04\ExpensesTable.db")
+        connection = sqlite3.connect(r"Pessoais\Otávio\ExpensesTable.db")
         cursor = connection.cursor()
         cursor.execute("""
             DELETE FROM Expenses 

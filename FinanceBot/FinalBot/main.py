@@ -60,7 +60,14 @@ async def readInput(update: Update, context: ContextTypes.DEFAULT_TYPE): # /2 /3
                 await update.message.reply_text("Nenhum gasto registrado até o momento.")
                 return
             output = processing.outputProcessing(output)
-            await update.message.reply_text(f"{output}\nSelecione o ID do gasto que você quer apagar.")
+            try:
+                await update.message.reply_text(f"{output}\nSelecione o ID do gasto que você quer apagar.")
+            except:
+                midpoint = len(output) // 2
+                first_half = output[:midpoint]
+                last_half = output[midpoint:]
+                await update.message.reply_text(first_half)
+                await update.message.reply_text(last_half)
             return GO_TO_REMOVE
         elif input == "/1":
             await update.message.reply_text(f"Qual mês quer buscar os gastos essenciais?")
@@ -107,7 +114,6 @@ async def showSum(update: Update, context: ContextTypes.DEFAULT_TYPE): # /3
         elif sum is False:
             await update.message.reply_text("Algum erro ocorreu na busca no banco de dados.")
             return ConversationHandler.END
-        
         sum = f"{sum[0]:.2f}".replace(".", ",")
         output = f"R${sum}"
         await update.message.reply_text(output)
@@ -134,10 +140,10 @@ async def showMonth(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("Mês Inválido. Tente novamente:")
             return GO_TO_MONTH
         currentYear = datetime.now().year
-        date = f"4/{month}/{currentYear}"
-        nextDate = '3/'
+        date = f"3/{month}/{currentYear}"
+        nextDate = '2/'
         if month == 12:
-            nextDate += f"1/{currentYear}"
+            nextDate += f"1/{currentYear + 1}"
         else:
             nextDate += f"{month + 1}/{currentYear}"
         date = datetime.strptime(date, "%d/%m/%Y").date()
@@ -145,7 +151,6 @@ async def showMonth(update: Update, context: ContextTypes.DEFAULT_TYPE):
         nextDate = datetime.strptime(nextDate, "%d/%m/%Y").date()
         nextDate = datetime.strftime(nextDate, "%Y-%m-%d")
         results1, sum1, results2, sum2 = database.showMonth(date, nextDate)
-        print(results1)
         if results1 == [] and results2 == []:
             await update.message.reply_text("Nenhum gasto nesse mês.")
             return ConversationHandler.END
@@ -157,11 +162,13 @@ async def showMonth(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if sum1[0] is None:
                 output += f"\nNada relacionado aos tipos gerais nesse mês.\n---------------------------------"
             else:
-                output += f"\nSoma dos Gastos Gerais: R${sum1[0]}\n---------------------------------".replace(".", ",")
+                sum3 = f"{sum1[0]:.2f}"
+                output += f"\nSoma dos Gastos Gerais: R${sum3}\n---------------------------------".replace(".", ",")
             if sum2[0] is None:
                 output += f"\nNada relacionado ao tipo Extra nesse mês.\n---------------------------------"
             else:
-                output += f"\nSoma dos Gastos Extras: R${sum2[0]}\n---------------------------------".replace(".", ",")
+                sum4 = f"{sum2[0]:.2f}"
+                output += f"\nSoma dos Gastos Extras: R${sum4}\n---------------------------------".replace(".", ",")
             sum = sum1[0] + sum2[0]
             sum = f"{sum:.2f}"
             output += f"\nSoma total dos gastos: R${sum}\n---------------------------------".replace(".", ",")
@@ -175,11 +182,13 @@ async def showMonth(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if sum1[0] is None:
                 output += f"\nNada relacionado aos tipos gerais nesse mês.\n---------------------------------"
             else:
-                output += f"\nSoma dos Gastos Gerais: R${sum1[0]}\n---------------------------------".replace(".", ",")
+                sum3 = f"{sum1[0]:.2f}"
+                output += f"\nSoma dos Gastos Gerais: R${sum3}\n---------------------------------".replace(".", ",")
             if sum2[0] is None:
                 output += f"\nNada relacionado ao tipo Extra nesse mês.\n---------------------------------"
             else:
-                output += f"\nSoma dos Gastos Extras: R${sum2[0]}\n---------------------------------".replace(".", ",")
+                sum4 = f"{sum2[0]:.2f}"
+                output += f"\nSoma dos Gastos Extras: R${sum4}\n---------------------------------".replace(".", ",")
             sum = sum1[0] + sum2[0]
             sum = f"{sum:.2f}"
             output += f"\nSoma total dos gastos: R${sum}\n---------------------------------\n".replace(".", ",")
