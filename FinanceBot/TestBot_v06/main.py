@@ -14,7 +14,7 @@ GO_TO_SHOWEXPENSES, GO_TO_REMOVEEXPENSES, GO_TO_GETMONTH, GO_TO_GETIDS, GO_TO_SH
 async def showMenu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         print("Mostrando menu.\n---------------------------------")
-        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nOs tipos disponíveis são: Transporte, Compras, Extra e Outros.\n\nDigite /1 mostrar os gastos e a soma deles em um mês.\n\nDigite /2 para filtrar gastos.\n\nDigite /3 para somar gastos.\n\nDigite /4 para remover um gasto.\n\nDigite /5 para mostrar todos os gastos.\n-------------------------------------")
+        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nOs tipos disponíveis são: Transporte, Compras, Extra e Outros.\n\nDigite /1 para mostrar a soma dos gastos em um mês.\n\nDigite /2 para mostrar as informações dos gastos em um mês.\n\nDigite /3 para remover gastos.\n-------------------------------------")
         return True
     except Exception as e:
         print(f"Erro ao mostrar o menu.\nErro: {e}\n--------------------")
