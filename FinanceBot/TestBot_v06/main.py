@@ -69,7 +69,7 @@ async def removeAux2(update:Update, context: ContextTypes.DEFAULT_TYPE):
     if Month is False:
         await update.message.reply_text("Mês inválido.")
         return ConversationHandler.END
-    results = database.showAll(Month, "2")
+    results = database.showAll(Month, "4")
     if not results:
         await update.message.reply_text("Nenhum gasto encontrado.")
         return ConversationHandler.END        
@@ -79,7 +79,7 @@ async def removeAux2(update:Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
     except:
         print("Mensagem muito grande. Dividindo ela em duas...")
-        results1, results2 = database.showAll(Month, "3")
+        results1, results2 = database.showAll(Month, "4")
         if not results1 and not results2:
             await update.message.reply_text("Nenhum gasto encontrado.")
             return ConversationHandler.END   

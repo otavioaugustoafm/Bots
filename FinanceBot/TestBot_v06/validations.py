@@ -67,7 +67,7 @@ def validateDBDates(month):
     try:
         currentYear = datetime.now().year
         date = f"2/{month}/{currentYear}"
-        nextDate = '3/'
+        nextDate = '1/'
         if month == 12:
             nextDate += f"1/{currentYear + 1}"
         else:

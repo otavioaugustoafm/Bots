@@ -75,20 +75,28 @@ def showAll(Month, command):
         connection = sqlite3.connect((r"ExpensesTable.db"))
         cursor = connection.cursor()
         sqlCommand = "SELECT "
-        if command == "1":
+        if command == "2":
             sqlCommand += "Value, Type, Date, Description "
-        elif command == "2":
-            sqlCommand += "* "
         elif command == "3":
-           sqlCommand += "Value, Type, Date, Description FROM Expenses WHERE Date BETWEEN ? AND ? ORDER BY Date ASC"
-           cursor.execute(sqlCommand, (date, nextDate))
-           results = cursor.fetchall()
-           half = len(results) // 2
-           results1 = results[:half]
-           results2 = results[half:]
-           connection.close()
-           print("\nBusca feita.\n--------------------")
-           return results1, results2
+            sqlCommand += "Value, Type, Date, Description FROM Expenses WHERE Date BETWEEN ? AND ? ORDER BY Date ASC"
+            cursor.execute(sqlCommand, (date, nextDate))
+            results = cursor.fetchall()
+            half = len(results) // 2
+            results1 = results[:half]
+            results2 = results[half:]
+            connection.close()
+            print("\nBusca feita.\n--------------------")
+            return results1, results2
+        elif command == "4":
+            sqlCommand += "* FROM Expenses WHERE Date BETWEEN ? AND ? ORDER BY Date ASC"
+            cursor.execute(sqlCommand, (date, nextDate))
+            results = cursor.fetchall()
+            half = len(results) // 2
+            results1 = results[:half]
+            results2 = results[half:]
+            connection.close()
+            print("\nBusca feita.\n--------------------")
+            return results1, results2
         sqlCommand += "FROM Expenses WHERE Date BETWEEN ? AND ? ORDER BY Date ASC"
         cursor.execute(sqlCommand, (date, nextDate))
         results = cursor.fetchall()
