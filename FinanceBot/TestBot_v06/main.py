@@ -5,7 +5,7 @@ import validations
 import processing
 import database
 
-TOKEN = "8030257844:AAEzUlXSamdDxZHqA1tnSSk9zMc9fpSWEbA"
+TOKEN = "N/A"
 
 removeMonth = ""
 
