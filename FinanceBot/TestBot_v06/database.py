@@ -77,6 +77,8 @@ def showAll(Month, command):
         sqlCommand = "SELECT "
         if command == "2":
             sqlCommand += "Value, Type, Date, Description "
+        elif command == "5":
+            sqlCommand += "* "
         elif command == "3":
             sqlCommand += "Value, Type, Date, Description FROM Expenses WHERE Date BETWEEN ? AND ? ORDER BY Date ASC"
             cursor.execute(sqlCommand, (date, nextDate))

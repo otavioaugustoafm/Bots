@@ -5,7 +5,7 @@ import validations
 import processing
 import database
 
-TOKEN = "N/A"
+TOKEN = "8030257844:AAEzUlXSamdDxZHqA1tnSSk9zMc9fpSWEbA"
 
 removeMonth = ""
 
@@ -69,14 +69,15 @@ async def removeAux2(update:Update, context: ContextTypes.DEFAULT_TYPE):
     if Month is False:
         await update.message.reply_text("Mês inválido.")
         return ConversationHandler.END
-    results = database.showAll(Month, "4")
+    results = database.showAll(Month, "5")
     if not results:
         await update.message.reply_text("Nenhum gasto encontrado.")
         return ConversationHandler.END        
     output = processing.outputProcessing(results)
     try:
         await update.message.reply_text(output)
-        return ConversationHandler.END
+        await update.message.reply_text("Digite os IDs dos gastos que quer remover.\n\nUtilize uma barra de espaço entre eles.\n\nSe mudar de ideia, digite SAIR.")
+        return GO_TO_GETIDS
     except:
         print("Mensagem muito grande. Dividindo ela em duas...")
         results1, results2 = database.showAll(Month, "4")
