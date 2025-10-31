@@ -51,9 +51,11 @@ def inputProcessing(input):
         print(f"Erro ao processar a entrada.\nErro: {e}\n--------------------")
         return None
     
-def outputProcessing(list):
+def outputProcessing(list, option=None):
     try:
-        output = "\n---------- Seus Gastos ----------\n"
+        output = ""
+        if option is None:
+            output = "\n---------- Seus Gastos ----------\n"
         for item in list:
             try:
                 Id, Value, Type, Date, Description = item

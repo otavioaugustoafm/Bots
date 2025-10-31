@@ -74,14 +74,28 @@ async def removeAux2(update:Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Nenhum gasto encontrado.")
         return ConversationHandler.END        
     output = processing.outputProcessing(results)
-    await update.message.reply_text(output)
-    await update.message.reply_text("Digite os IDs dos gastos que quer remover.\n\nUtilize uma barra de espaço entre eles e se atente para não digitar errado.")
-    return GO_TO_GETIDS
-
+    try:
+        await update.message.reply_text(output)
+        return ConversationHandler.END
+    except:
+        print("Mensagem muito grande. Dividindo ela em duas...")
+        results1, results2 = database.showAll(Month, "3")
+        if not results1 and not results2:
+            await update.message.reply_text("Nenhum gasto encontrado.")
+            return ConversationHandler.END   
+        output = processing.outputProcessing(results1, 1)
+        await update.message.reply_text(output)
+        output = processing.outputProcessing(results2, 1)
+        await update.message.reply_text(output)
+        await update.message.reply_text("Digite os IDs dos gastos que quer remover.\n\nUtilize uma barra de espaço entre eles.\n\nSe mudar de ideia, digite SAIR.")
+        return GO_TO_GETIDS
+        
 async def removeExpenses(update:Update, context: ContextTypes.DEFAULT_TYPE):
-    print("Removendo gastos...")
     try:
         removeIDs = update.message.text
+        if removeIDs.upper() == "SAIR":
+            await update.message.reply_text("Saindo da remoção de gastos.")
+            return ConversationHandler.END
         removeIDs = removeIDs.split(" ")
         status = database.removeExpenses(removeIDs)
         if status is True:
@@ -109,10 +123,20 @@ async def showAllExpenses(update:Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("Nenhum gasto encontrado.")
             return ConversationHandler.END               
         output = processing.outputProcessing(results)
-        await update.message.reply_text(output)
-        return ConversationHandler.END
+        try:
+            await update.message.reply_text(output)
+            return ConversationHandler.END
+        except:
+            print("Mensagem muito grande. Dividindo ela em duas...")
+            results1, results2 = database.showAll(Month, "3")
+            output = processing.outputProcessing(results1)
+            await update.message.reply_text(output)
+            output = processing.outputProcessing(results2, 1)
+            await update.message.reply_text(output)
+            return ConversationHandler.END
     except Exception as e:
         print(f"Erro ao mostrar gastos.\nErro: {e}")
+        await update.message.reply_text(e)
         return None
 
 def main():
