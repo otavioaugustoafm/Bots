@@ -48,20 +48,29 @@ def getExpenses(date, nextDate):
     try:
         connection = sqlite3.connect((r"ExpensesTable.db"))
         cursor = connection.cursor()
-        sqlCommand = "SELECT Type, SUM(Value) FROM Expenses WHERE Date BETWEEN ? AND ? GROUP BY Type"
+        sqlCommand = "SELECT Type, SUM(Value) FROM Expenses WHERE Date BETWEEN ? AND ? AND Type != 'Extra' GROUP BY Type"
         cursor.execute(sqlCommand, (date, nextDate))
         results = cursor.fetchall()
         if not results:
             return "Nenhum gasto encontrado."
         output = ""
         for row in results:
-            Value = f"{row[1]:.2f}".replace(".", ",")
-            output += f"{row[0]}: R${Value}\n"
+            type = row[0]
+            value = row[1] if row[1] else 0
+            value = f"{value:.2f}".replace(".", ",")
+            output += f"{type}: R${value}\n"
+        sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE Date BETWEEN ? AND ? AND Type = 'Extra'"
+        cursor.execute(sqlCommand, (date, nextDate))
+        extra_expenses = cursor.fetchone()[0] or 0
+        output += f"Gastos Extras: R${extra_expenses:.2f}\n".replace(".", ",")
+        sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE Date BETWEEN ? AND ? AND Type != 'Extra'"
+        cursor.execute(sqlCommand, (date, nextDate))
+        my_expenses = cursor.fetchone()[0] or 0
+        output += f"Meus Gastos: R${my_expenses:.2f}\n".replace(".", ",")
         sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE Date BETWEEN ? AND ?"
         cursor.execute(sqlCommand, (date, nextDate))
-        results = cursor.fetchone()
-        Value = f"{results[0]:.2f}".replace(".", ",")
-        output += f"Total: R${Value}"
+        total = cursor.fetchone()[0] or 0
+        output += f"Total Geral: R${total:.2f}".replace(".", ",")
         connection.close()
         return output
     except Exception as e:
