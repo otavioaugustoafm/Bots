@@ -51,8 +51,6 @@ def getExpenses(date, nextDate):
         sqlCommand = "SELECT Type, SUM(Value) FROM Expenses WHERE Date BETWEEN ? AND ? AND Type != 'Extra' GROUP BY Type"
         cursor.execute(sqlCommand, (date, nextDate))
         results = cursor.fetchall()
-        if not results:
-            return "Nenhum gasto encontrado."
         output = ""
         for row in results:
             type = row[0]
@@ -70,6 +68,9 @@ def getExpenses(date, nextDate):
         sqlCommand = "SELECT SUM(Value) FROM Expenses WHERE Date BETWEEN ? AND ?"
         cursor.execute(sqlCommand, (date, nextDate))
         total = cursor.fetchone()[0] or 0
+        if total == 0:
+            connection.close()
+            return "Nenhum gasto encontrado."
         output += f"Total Geral: R${total:.2f}".replace(".", ",")
         connection.close()
         return output
