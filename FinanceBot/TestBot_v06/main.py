@@ -9,12 +9,12 @@ TOKEN = "N/A"
 
 removeMonth = ""
 
-GO_TO_SHOWEXPENSES, GO_TO_REMOVEEXPENSES, GO_TO_GETMONTH, GO_TO_GETIDS, GO_TO_SHOWALL = range(5)
+GO_TO_SHOWEXPENSES, GO_TO_REMOVEEXPENSES, GO_TO_GETMONTH, GO_TO_GETIDS, GO_TO_SHOWALL, GO_TO_SHOW_BY_TYPE = range(6)
 
 async def showMenu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         print("Mostrando menu.\n---------------------------------")
-        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nOs tipos disponíveis são: Transporte, Compras, Extra e Outros.\n\nDigite /1 para mostrar a soma dos gastos em um mês.\n\nDigite /2 para mostrar as informações dos gastos em um mês.\n\nDigite /3 para remover gastos.\n-------------------------------------")
+        await update.message.reply_text("---------- Bot de finanças ----------\nInsira um gasto no seguinte modelo:\n\n VALOR TIPO DATA DESCRIÇÃO\n29,99 Compras 26/09/2005 Camiseta\n\nOs tipos disponíveis são: Transporte, Compras, Extra e Outros.\n\nDigite /1 para mostrar a soma dos gastos em um mês.\n\nDigite /2 para mostrar as informações dos gastos em um mês.\n\nDigite /3 para remover gastos.\n\nDigite /4 para mostrar os gastos de um tipo específico.\n-------------------------------------")
         return True
     except Exception as e:
         print(f"Erro ao mostrar o menu.\nErro: {e}\n--------------------")
@@ -140,6 +140,51 @@ async def showAllExpenses(update:Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(e)
         return None
 
+async def showByTypeAux(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Qual tipo de gasto você deseja visualizar?\n(Opções: Compras, Transporte, Extra, Outros)")
+    return GO_TO_SHOW_BY_TYPE
+
+async def showExpensesByType(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print("Filtrando gastos por tipo...")
+    try:
+        input_text = update.message.text
+        expense_type = validations.validateType(input_text)
+        
+        if expense_type is False:
+            await update.message.reply_text("Tipo inválido. Tente novamente (Compras, Transporte, Extra, Outros).")
+            return
+        
+        results = database.getExpensesByType(expense_type)
+        
+        if not results:
+            await update.message.reply_text(f"Nenhum gasto encontrado para o tipo: {expense_type}.")
+            return ConversationHandler.END
+
+        output = f"--- Gastos de {expense_type} ---\n\n"
+        total = 0
+        for row in results:
+            val = row[0]
+            date_str = datetime.strptime(row[1], "%Y-%m-%d").strftime("%d/%m/%Y")
+            desc = row[2]
+            
+            output += f"R${val:.2f} - {date_str}\nDesc: {desc}\n\n".replace(".", ",")
+            total += val
+            
+        output += f"Total: R${total:.2f}".replace(".", ",")
+        
+        if len(output) > 4000:
+            await update.message.reply_text("Muitos gastos encontrados. Mostrando os últimos itens...")
+            await update.message.reply_text(output[:4000]) # Envia cortado se for muito grande
+        else:
+            await update.message.reply_text(output)
+            
+        return ConversationHandler.END
+        
+    except Exception as e:
+        print(f"Erro ao mostrar gastos por tipo.\nErro: {e}")
+        await update.message.reply_text("Ocorreu um erro ao buscar os gastos.")
+        return ConversationHandler.END
+
 def main():
     try:
         database.createTable()
@@ -149,11 +194,13 @@ def main():
                 CommandHandler("1", showAux),
                 CommandHandler("2", showAllAux),
                 CommandHandler("3", removeAux1),
+                CommandHandler("4", showByTypeAux),
                 ],
             states = {
                 GO_TO_SHOWEXPENSES: [MessageHandler(filters.TEXT & ~filters.COMMAND, showExpenses)],
                 GO_TO_GETMONTH: [MessageHandler(filters.TEXT & ~filters.COMMAND, removeAux2)],
                 GO_TO_GETIDS: [MessageHandler(filters.TEXT & ~filters.COMMAND, removeExpenses)],
+                GO_TO_SHOW_BY_TYPE: [MessageHandler(filters.TEXT & ~filters.COMMAND, showExpensesByType)],
                 GO_TO_SHOWALL: [MessageHandler(filters.TEXT & ~filters.COMMAND, showAllExpenses)]
                 },
             fallbacks = []

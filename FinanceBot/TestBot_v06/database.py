@@ -25,6 +25,26 @@ def createTable():
         print(f"Erro ao criar/verificar tabela.\nErro: {e}\n--------------------")
         return False
     
+def getExpensesByType(expense_type):
+    print(f"Buscando gastos do tipo: {expense_type}...")
+    try:
+        connection = sqlite3.connect((r"ExpensesTable.db"))
+        cursor = connection.cursor()
+        # Seleciona Valor, Data e Descrição, ordenando do mais recente para o mais antigo
+        cursor.execute("""
+            SELECT Value, Date, Description 
+            FROM Expenses 
+            WHERE Type = ? 
+            ORDER BY Date DESC
+        """, (expense_type,))
+        results = cursor.fetchall()
+        connection.close()
+        print("Busca por tipo realizada com sucesso.\n--------------------")
+        return results
+    except Exception as e:
+        print(f"Erro ao buscar gastos por tipo.\nErro: {e}\n--------------------")
+        return None
+
 def store(expense):
     print("Armazenando gasto...")
     try:
